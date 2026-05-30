@@ -1,0 +1,220 @@
+{
+  "common": {
+    "appName": "BikeBook",
+    "tagline": "Create an exportable road book PDF from your GPX track",
+    "loading": "Loading…",
+    "error": "Something went wrong",
+    "retry": "Retry",
+    "back": "Back",
+    "export": "Export PDF",
+    "exporting": "Exporting…"
+  },
+  "footer": {
+    "madeIn": "Made in Nantes, in Brittany"
+  },
+  "landing": {
+    "title": "Your road book, ready to print",
+    "subtitle": "Upload a GPX file to visualize your route, POIs, and export a complete road book.",
+    "features": {
+      "map": "Interactive OpenStreetMap",
+      "elevation": "Elevation profile with POIs",
+      "pdf": "Print-ready PDF export"
+    },
+    "uploadTitle": "Import your GPX track",
+    "uploadHint": "Drag & drop a .gpx file or click to browse",
+    "uploadButton": "Choose a file",
+    "supportedFormats": "Supported format: GPX (tracks and waypoints)"
+  },
+  "roadbook": {
+    "title": "Road book",
+    "stats": {
+      "distance": "Distance",
+      "elevationGain": "Ascent",
+      "elevationLoss": "Descent",
+      "minElevation": "Min elev.",
+      "maxElevation": "Max elev."
+    },
+    "mapTitle": "Route map",
+    "mapLegend": {
+      "title": "Route grade",
+      "descent": "Descent",
+      "flat": "Flat",
+      "climb": "Climb",
+      "steep": "Steep"
+    },
+    "elevationTitle": "Elevation profile",
+    "poiTitle": "Points of interest",
+    "poiEmpty": "No waypoints found in the GPX",
+    "poiHint": "Hover or click a row to locate the POI on the map and profile.",
+    "poiDistance": "Km {distance}",
+    "poiInterval": "+{distance} km",
+    "poiIntervalGain": "+{gain} m",
+    "poiCumulativeGain": "D+ {gain} m",
+    "markers": {
+      "start": "Start",
+      "finish": "Finish"
+    },
+    "profile": {
+      "climb": "Climb ({index}/{total}): {gain} m / {length} km ({grade} %)",
+      "climbTitle": "Climb {index} of {total}",
+      "climbGain": "Elevation gain",
+      "climbLength": "Length",
+      "climbGrade": "Avg. grade",
+      "tooltipDistance": "Distance",
+      "tooltipElevation": "Elevation",
+      "tooltipGrade": "Grade here",
+      "poiTooltipTitle": "POI {number} — {name}",
+      "resetZoom": "Full view",
+      "zoomHint": "Scroll to zoom (min. {minKm} km) · Two-finger swipe to pan · Shift + drag · Double-click to reset",
+      "seaLevel": "Sea level"
+    },
+    "climbsTitle": "Catalogued climbs ({count})",
+    "climbsEmpty": "No significant climbs detected on this route.",
+    "climbsHint": "Hover or click a row to locate the climb on the profile.",
+    "climbStart": "Km {distance}",
+    "climbColumns": {
+      "number": "#",
+      "start": "Start",
+      "gain": "D+",
+      "length": "Length",
+      "grade": "Avg. grade"
+    },
+    "poiColumns": {
+      "number": "#",
+      "name": "Name",
+      "distance": "Km",
+      "kilometrage": "Km",
+      "interval": "Since prev. POI",
+      "cumulativeGain": "Cumulative D+",
+      "intervalGain": "+D+ interval",
+      "elevation": "Elevation",
+      "description": "Description"
+    },
+    "noData": "No track loaded. Upload a GPX file to get started.",
+    "goUpload": "Upload GPX",
+    "weather": {
+      "title": "Weather & wind",
+      "planTitle": "Ride planning",
+      "planHint": "Set your departure, total breaks, then choose an average speed or a finish arrival time.",
+      "departureLabel": "Departure",
+      "pauseLabel": "Total breaks (minutes)",
+      "pauseSummary": "{minutes} min",
+      "avgSpeedLabel": "Average speed (km/h)",
+      "arrivalLabel": "Finish arrival time",
+      "derivedArrival": "→ Estimated arrival: {time}",
+      "derivedSpeed": "→ Average speed: {speed} km/h (excluding breaks)",
+      "planMode": {
+        "speed": "Average speed",
+        "arrival": "Arrival time"
+      },
+      "planErrors": {
+        "invalidDeparture": "Invalid departure time.",
+        "invalidArrival": "Invalid arrival time.",
+        "arrivalBeforeDeparture": "Arrival must be after departure (including breaks).",
+        "invalidSpeed": "Invalid average speed.",
+        "invalidDistance": "Invalid route distance.",
+        "missingArrival": "Enter an arrival time.",
+        "invalidPlan": "Invalid ride plan."
+      },
+      "refresh": "Refresh weather",
+      "loading": "Loading forecast…",
+      "fetchError": "Could not fetch weather data",
+      "segmentsEmpty": "No weather segments available.",
+      "segmentsHint": "Hover or click a row to locate the segment on the map.",
+      "segmentLabel": "Segment {id}",
+      "segmentKm": "Km {km}",
+      "passageAt": "Passage ~ {time}",
+      "windSpeed": "{speed} km/h",
+      "windComponent": "{value} km/h (component)",
+      "temperature": "{value} °C",
+      "precipitation": "{value} mm",
+      "tempRange": "{min} to {max} °C",
+      "windRelative": {
+        "headwind": "Headwind",
+        "tailwind": "Tailwind",
+        "crosswind": "Crosswind"
+      },
+      "weatherCode": {
+        "clear": "Clear sky",
+        "mainlyClear": "Mainly clear",
+        "partlyCloudy": "Partly cloudy",
+        "overcast": "Overcast",
+        "fog": "Fog",
+        "drizzle": "Drizzle",
+        "rain": "Rain",
+        "snow": "Snow",
+        "thunderstorm": "Thunderstorm",
+        "unknown": "Unknown conditions"
+      },
+      "summary": {
+        "plannedSpeed": "Planned pace",
+        "arrival": "Arrival",
+        "pause": "Breaks",
+        "dominant": "Dominant wind",
+        "avgWind": "Avg. wind",
+        "temp": "Temperature",
+        "precip": "Precipitation"
+      },
+      "columns": {
+        "number": "#",
+        "sky": "Weather",
+        "km": "Km",
+        "passage": "Passage",
+        "wind": "Wind",
+        "speed": "Speed",
+        "component": "Component",
+        "temp": "Temp.",
+        "precip": "Rain"
+      }
+    }
+  },
+  "upload": {
+    "parsing": "Parsing GPX file…",
+    "success": "Track imported successfully",
+    "errors": {
+      "invalidType": "Please select a .gpx file",
+      "tooLarge": "File is too large (max 10 MB)",
+      "invalidXml": "The GPX file is not valid XML",
+      "noTrack": "No track found in the GPX file",
+      "emptyTrack": "The track must contain at least two points",
+      "parseError": "Unable to parse the GPX file",
+      "network": "Network error while parsing"
+    }
+  },
+  "pdf": {
+    "title": "Road book",
+    "generatedAt": "Generated on {date}",
+    "statsSection": "Statistics",
+    "poiSection": "Points of interest",
+    "climbsSection": "Catalogued climbs",
+    "profileSection": "Elevation profile",
+    "profileDetailSection": "Detailed elevation profile",
+    "mapSection": "Route overview",
+    "km": "km",
+    "m": "m",
+    "poiColumns": {
+      "number": "#",
+      "name": "Name",
+      "kilometrage": "Km",
+      "interval": "Since prev.",
+      "intervalGain": "+D+ int.",
+      "cumulativeGain": "Cum. D+",
+      "elevation": "Elev.",
+      "description": "Desc."
+    },
+    "climbColumns": {
+      "number": "#",
+      "start": "Start",
+      "gain": "D+",
+      "length": "Length",
+      "grade": "Avg. grade"
+    }
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "languageSwitcher": "Change language",
+    "mapDescription": "Interactive map of the GPX route",
+    "elevationChart": "Elevation profile chart",
+    "dropzone": "GPX file drop zone"
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "common": {
+    "appName": "BikeBook",
+    "tagline": "Krouit ur road book PDF adalek ho hent GPX",
+    "loading": "O kargañ…",
+    "error": "Ur fazi zo c'hoarvezet",
+    "retry": "Klask en-dro",
+    "back": "Distro",
+    "export": "Ezporzhiañ PDF",
+    "exporting": "O ezporzhiañ…"
+  },
+  "footer": {
+    "madeIn": "Made in Naoned, e Breizh"
+  },
+  "landing": {
+    "title": "Ho road book, prest da vezañ moullañ",
+    "subtitle": "Enporzhiit ur restr GPX evit gwelet ho hent, ar POI hag ezporzhiañ ur levr hent klok.",
+    "features": {
+      "map": "Kartenn etreweuriat OpenStreetMap",
+      "elevation": "Profil uhelder gant POI",
+      "pdf": "Ezporzh PDF prest da vezañ moullañ"
+    },
+    "uploadTitle": "Enporzhiañ ho hent GPX",
+    "uploadHint": "Riklit ha leskit ur restr .gpx pe klikit evit furchal",
+    "uploadButton": "Dibab ur restr",
+    "supportedFormats": "Furmad skoret : GPX (hentoù ha poentoù)"
+  },
+  "roadbook": {
+    "title": "Road book",
+    "stats": {
+      "distance": "Hed",
+      "elevationGain": "D+",
+      "elevationLoss": "D−",
+      "minElevation": "Uhelder izel",
+      "maxElevation": "Uhelder uhel"
+    },
+    "mapTitle": "Kartenn an hent",
+    "mapLegend": {
+      "title": "Kromm an hent",
+      "descent": "Disgenn",
+      "flat": "Plat",
+      "climb": "Pignadenn",
+      "steep": "Stoure"
+    },
+    "elevationTitle": "Profil uhelder",
+    "poiTitle": "Poentoù oberiant",
+    "poiEmpty": "N'eus bet kavet waypoint ebet er GPX",
+    "poiHint": "Merdeit pe klikit war ur linenn evit kavout ar POI war ar gartenn hag ar profil.",
+    "poiDistance": "Km {distance}",
+    "poiInterval": "+{distance} km",
+    "poiIntervalGain": "+{gain} m",
+    "poiCumulativeGain": "D+ {gain} m",
+    "markers": {
+      "start": "Loc'hañ",
+      "finish": "Fin"
+    },
+    "profile": {
+      "climb": "Pignadenn ({index}/{total}) : {gain} m / {length} km ({grade} %)",
+      "climbTitle": "Pignadenn {index} war {total}",
+      "climbGain": "Drenverhed",
+      "climbLength": "Hirder",
+      "climbGrade": "Kromm vevk",
+      "tooltipDistance": "Hed",
+      "tooltipElevation": "Uhelder",
+      "tooltipGrade": "Kromm amañ",
+      "poiTooltipTitle": "POI {number} — {name}",
+      "resetZoom": "Gwel a-bezh",
+      "zoomHint": "Rodell evit zoumañ (min. {minKm} km) · 2 viz evit fiñial · Maj + riklañ · Double-klik evit adderaouekaat",
+      "seaLevel": "Live ar mor"
+    },
+    "climbsTitle": "Pignadennioù niverennet ({count})",
+    "climbsEmpty": "N'eus bet kavet pignadenn vras ebet war an hent-mañ.",
+    "climbsHint": "Merdeit pe klikit war ur linenn evit kavout ar pignadenn war ar profil.",
+    "climbStart": "Km {distance}",
+    "climbColumns": {
+      "number": "#",
+      "start": "Loc'hañ",
+      "gain": "D+",
+      "length": "Hirder",
+      "grade": "Kromm vevk"
+    },
+    "poiColumns": {
+      "number": "#",
+      "name": "Anv",
+      "distance": "Km",
+      "kilometrage": "Km",
+      "interval": "Adalek POI kent",
+      "cumulativeGain": "D+ karget",
+      "intervalGain": "+D+ etre",
+      "elevation": "Uhelder",
+      "description": "Deskrivadur"
+    },
+    "noData": "Hent ebet karget. Enporzhiit ur restr GPX evit kregiñ.",
+    "goUpload": "Enporzhiañ ur GPX",
+    "weather": {
+      "title": "Amzer ha avel",
+      "planTitle": "Kempenn an hent",
+      "planHint": "Merkit ho loc'hañ, ho paosioù, ha dibabit ur buhezvev vevk pe un eur deouec'h e fin an hent.",
+      "departureLabel": "Loc'hañ",
+      "pauseLabel": "Paosioù hollad (munutennoù)",
+      "pauseSummary": "{minutes} min",
+      "avgSpeedLabel": "Buhezvev vevk (km/h)",
+      "arrivalLabel": "Deouec'h e fin an hent",
+      "derivedArrival": "→ Deouec'h estimet : {time}",
+      "derivedSpeed": "→ Buhezvev vevk : {speed} km/h (hep paosioù)",
+      "planMode": {
+        "speed": "Buhezvev vevk",
+        "arrival": "Eur deouec'h"
+      },
+      "planErrors": {
+        "invalidDeparture": "Eur loc'hañ direizh.",
+        "invalidArrival": "Eur deouec'h direizh.",
+        "arrivalBeforeDeparture": "An deouec'h a zlefe bezañ goude ar loc'hañ (paosioù enkorfet).",
+        "invalidSpeed": "Buhezvev vevk direizh.",
+        "invalidDistance": "Hed an hent direizh.",
+        "missingArrival": "Merkit un eur deouec'h.",
+        "invalidPlan": "Kempenn direizh."
+      },
+      "refresh": "Adgweredekaat an amzer",
+      "loading": "O kargañ ar reolak…",
+      "fetchError": "Ne c'haller ket adtapout an amzer",
+      "segmentsEmpty": "Rann amzer ebet hegerz.",
+      "segmentsHint": "Merdeit pe klikit war ur linenn evit kavout ar rann war ar gartenn.",
+      "segmentLabel": "Rann {id}",
+      "segmentKm": "Km {km}",
+      "passageAt": "Treuz ~ {time}",
+      "windSpeed": "{speed} km/h",
+      "windComponent": "{value} km/h (kenefed)",
+      "temperature": "{value} °C",
+      "precipitation": "{value} mm",
+      "tempRange": "{min} da {max} °C",
+      "windRelative": {
+        "headwind": "A-enep",
+        "tailwind": "A-dreñv",
+        "crosswind": "A gostez"
+      },
+      "weatherCode": {
+        "clear": "Oered glan",
+        "mainlyClear": "Oered nebeut",
+        "partlyCloudy": "Oered darnel",
+        "overcast": "Komzlet",
+        "fog": "Nikl",
+        "drizzle": "Goulou-broign",
+        "rain": "Glav",
+        "snow": "Erc'h",
+        "thunderstorm": "Taranoù",
+        "unknown": "Amzer dianav"
+      },
+      "summary": {
+        "plannedSpeed": "Buhezvev kempenn",
+        "arrival": "Deouec'h",
+        "pause": "Paosioù",
+        "dominant": "Avel pennañ",
+        "avgWind": "Avel vevk",
+        "temp": "Temperadur",
+        "precip": "Glavioù"
+      },
+      "columns": {
+        "number": "#",
+        "sky": "Amzer",
+        "km": "Km",
+        "passage": "Treuz",
+        "wind": "Avel",
+        "speed": "Tizh",
+        "component": "Kenefed",
+        "temp": "Temp.",
+        "precip": "Glav"
+      }
+    }
+  },
+  "upload": {
+    "parsing": "O analizañ ar restr GPX…",
+    "success": "Hent enporzhiet gant berzh",
+    "errors": {
+      "invalidType": "Dibabit ur restr .gpx mar plij",
+      "tooLarge": "Re vras eo ar restr (10 Mo d'ar muiañ)",
+      "invalidXml": "N'eo ket XML reizh ar restr GPX",
+      "noTrack": "Hent ebet kavet er restr GPX",
+      "emptyTrack": "An hent a rank kaout un nebeudig eizh poent da nebeutañ",
+      "parseError": "Ne c'haller ket analizañ ar restr GPX",
+      "network": "Fazi rouedad en ur analizañ"
+    }
+  },
+  "pdf": {
+    "title": "Road book",
+    "generatedAt": "Bet krouet d'an {date}",
+    "statsSection": "Stadegoù",
+    "poiSection": "Poentoù oberiant",
+    "climbsSection": "Pignadennioù niverennet",
+    "profileSection": "Profil uhelder",
+    "profileDetailSection": "Profil uhelder munut",
+    "mapSection": "Gwel hollek an hent",
+    "km": "km",
+    "m": "m",
+    "poiColumns": {
+      "number": "#",
+      "name": "Anv",
+      "kilometrage": "Km",
+      "interval": "Adalek kent",
+      "intervalGain": "+D+ etre",
+      "cumulativeGain": "D+ karg.",
+      "elevation": "Uheld.",
+      "description": "Desk."
+    },
+    "climbColumns": {
+      "number": "#",
+      "start": "Loc'hañ",
+      "gain": "D+",
+      "length": "Hirder",
+      "grade": "Kromm vevk"
+    }
+  },
+  "a11y": {
+    "skipToContent": "Mont d'an endalc'had",
+    "languageSwitcher": "Cheñch yezh",
+    "mapDescription": "Kartenn etreweuriat an hent GPX",
+    "elevationChart": "Grafik profil uhelder",
+    "dropzone": "Takad leuskel restr GPX"
+  }
+}

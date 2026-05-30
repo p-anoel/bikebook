@@ -1,0 +1,220 @@
+{
+  "common": {
+    "appName": "BikeBook",
+    "tagline": "Créez un road book PDF à partir de votre trace GPX",
+    "loading": "Chargement…",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "back": "Retour",
+    "export": "Exporter PDF",
+    "exporting": "Export en cours…"
+  },
+  "footer": {
+    "madeIn": "Made in Nantes, in Bretagne"
+  },
+  "landing": {
+    "title": "Votre road book, prêt à imprimer",
+    "subtitle": "Importez un fichier GPX pour visualiser votre parcours, les POI et exporter un carnet de route complet.",
+    "features": {
+      "map": "Carte interactive OpenStreetMap",
+      "elevation": "Profil altimétrique avec POI",
+      "pdf": "Export PDF prêt à imprimer"
+    },
+    "uploadTitle": "Importer votre trace GPX",
+    "uploadHint": "Glissez-déposez un fichier .gpx ou cliquez pour parcourir",
+    "uploadButton": "Choisir un fichier",
+    "supportedFormats": "Format supporté : GPX (tracks et waypoints)"
+  },
+  "roadbook": {
+    "title": "Road book",
+    "stats": {
+      "distance": "Distance",
+      "elevationGain": "D+",
+      "elevationLoss": "D−",
+      "minElevation": "Alt. min",
+      "maxElevation": "Alt. max"
+    },
+    "mapTitle": "Carte du parcours",
+    "mapLegend": {
+      "title": "Pente du parcours",
+      "descent": "Descente",
+      "flat": "Plat",
+      "climb": "Montée",
+      "steep": "Raide"
+    },
+    "elevationTitle": "Profil altimétrique",
+    "poiTitle": "Points d'intérêt",
+    "poiEmpty": "Aucun waypoint trouvé dans le GPX",
+    "poiHint": "Survolez ou cliquez sur une ligne pour repérer le POI sur la carte et le profil.",
+    "poiDistance": "Km {distance}",
+    "poiInterval": "+{distance} km",
+    "poiIntervalGain": "+{gain} m",
+    "poiCumulativeGain": "D+ {gain} m",
+    "markers": {
+      "start": "Départ",
+      "finish": "Arrivée"
+    },
+    "profile": {
+      "climb": "Montée ({index}/{total}) : {gain} m / {length} km ({grade} %)",
+      "climbTitle": "Montée {index} sur {total}",
+      "climbGain": "Dénivelé",
+      "climbLength": "Longueur",
+      "climbGrade": "Pente moyenne",
+      "tooltipDistance": "Distance",
+      "tooltipElevation": "Altitude",
+      "tooltipGrade": "Pente ici",
+      "poiTooltipTitle": "POI {number} — {name}",
+      "resetZoom": "Vue complète",
+      "zoomHint": "Molette pour zoomer (min. {minKm} km) · 2 doigts pour naviguer · Maj + glisser · Double-clic pour réinitialiser",
+      "seaLevel": "Niveau de la mer"
+    },
+    "climbsTitle": "Montées répertoriées ({count})",
+    "climbsEmpty": "Aucune montée significative détectée sur ce parcours.",
+    "climbsHint": "Survolez ou cliquez sur une ligne pour repérer la montée sur le profil.",
+    "climbStart": "Km {distance}",
+    "climbColumns": {
+      "number": "#",
+      "start": "Départ",
+      "gain": "D+",
+      "length": "Longueur",
+      "grade": "Pente moy."
+    },
+    "poiColumns": {
+      "number": "#",
+      "name": "Nom",
+      "distance": "Km",
+      "kilometrage": "Km",
+      "interval": "Depuis POI préc.",
+      "cumulativeGain": "D+ cumulé",
+      "intervalGain": "+D+ intervalle",
+      "elevation": "Altitude",
+      "description": "Description"
+    },
+    "noData": "Aucune trace chargée. Importez un fichier GPX pour commencer.",
+    "goUpload": "Importer un GPX",
+    "weather": {
+      "title": "Météo et vent",
+      "planTitle": "Planification du parcours",
+      "planHint": "Indiquez votre départ, vos pauses, puis choisissez une vitesse moyenne ou une heure d'arrivée à destination.",
+      "departureLabel": "Départ",
+      "pauseLabel": "Pauses totales (minutes)",
+      "pauseSummary": "{minutes} min",
+      "avgSpeedLabel": "Vitesse moyenne (km/h)",
+      "arrivalLabel": "Arrivée à destination",
+      "derivedArrival": "→ Arrivée estimée : {time}",
+      "derivedSpeed": "→ Vitesse moyenne : {speed} km/h (hors pauses)",
+      "planMode": {
+        "speed": "Vitesse moyenne",
+        "arrival": "Heure d'arrivée"
+      },
+      "planErrors": {
+        "invalidDeparture": "Heure de départ invalide.",
+        "invalidArrival": "Heure d'arrivée invalide.",
+        "arrivalBeforeDeparture": "L'arrivée doit être après le départ (en tenant compte des pauses).",
+        "invalidSpeed": "Vitesse moyenne invalide.",
+        "invalidDistance": "Distance du parcours invalide.",
+        "missingArrival": "Indiquez une heure d'arrivée.",
+        "invalidPlan": "Planification invalide."
+      },
+      "refresh": "Actualiser la météo",
+      "loading": "Chargement des prévisions…",
+      "fetchError": "Impossible de récupérer la météo",
+      "segmentsEmpty": "Aucun segment météo disponible.",
+      "segmentsHint": "Survolez ou cliquez sur un segment pour le repérer sur la carte.",
+      "segmentLabel": "Segment {id}",
+      "segmentKm": "Km {km}",
+      "passageAt": "Passage ~ {time}",
+      "windSpeed": "{speed} km/h",
+      "windComponent": "{value} km/h (composante)",
+      "temperature": "{value} °C",
+      "precipitation": "{value} mm",
+      "tempRange": "{min} à {max} °C",
+      "windRelative": {
+        "headwind": "Face",
+        "tailwind": "Arrière",
+        "crosswind": "Travers"
+      },
+      "weatherCode": {
+        "clear": "Ciel dégagé",
+        "mainlyClear": "Peu nuageux",
+        "partlyCloudy": "Partiellement nuageux",
+        "overcast": "Couvert",
+        "fog": "Brouillard",
+        "drizzle": "Bruine",
+        "rain": "Pluie",
+        "snow": "Neige",
+        "thunderstorm": "Orage",
+        "unknown": "Conditions inconnues"
+      },
+      "summary": {
+        "plannedSpeed": "Allure planifiée",
+        "arrival": "Arrivée",
+        "pause": "Pauses",
+        "dominant": "Vent dominant",
+        "avgWind": "Vent moyen",
+        "temp": "Température",
+        "precip": "Précipitations"
+      },
+      "columns": {
+        "number": "#",
+        "sky": "Météo",
+        "km": "Km",
+        "passage": "Passage",
+        "wind": "Vent",
+        "speed": "Vitesse",
+        "component": "Composante",
+        "temp": "Temp.",
+        "precip": "Pluie"
+      }
+    }
+  },
+  "upload": {
+    "parsing": "Analyse du fichier GPX…",
+    "success": "Trace importée avec succès",
+    "errors": {
+      "invalidType": "Veuillez sélectionner un fichier .gpx",
+      "tooLarge": "Le fichier est trop volumineux (max 10 Mo)",
+      "invalidXml": "Le fichier GPX n'est pas un XML valide",
+      "noTrack": "Aucune trace trouvée dans le fichier GPX",
+      "emptyTrack": "La trace doit contenir au moins deux points",
+      "parseError": "Impossible d'analyser le fichier GPX",
+      "network": "Erreur réseau lors de l'analyse"
+    }
+  },
+  "pdf": {
+    "title": "Road book",
+    "generatedAt": "Généré le {date}",
+    "statsSection": "Statistiques",
+    "poiSection": "Points d'intérêt",
+    "climbsSection": "Montées répertoriées",
+    "profileSection": "Profil altimétrique",
+    "profileDetailSection": "Profil altimétrique détaillé",
+    "mapSection": "Aperçu du parcours",
+    "km": "km",
+    "m": "m",
+    "poiColumns": {
+      "number": "#",
+      "name": "Nom",
+      "kilometrage": "Km",
+      "interval": "Depuis préc.",
+      "intervalGain": "+D+ int.",
+      "cumulativeGain": "D+ cum.",
+      "elevation": "Alt.",
+      "description": "Desc."
+    },
+    "climbColumns": {
+      "number": "#",
+      "start": "Départ",
+      "gain": "D+",
+      "length": "Longueur",
+      "grade": "Pente moy."
+    }
+  },
+  "a11y": {
+    "skipToContent": "Aller au contenu",
+    "languageSwitcher": "Changer de langue",
+    "mapDescription": "Carte interactive du parcours GPX",
+    "elevationChart": "Graphique du profil altimétrique",
+    "dropzone": "Zone de dépôt pour fichier GPX"
+  }
+}
