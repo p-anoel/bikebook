@@ -29,7 +29,7 @@ export function GradientTrackLine({ track }: GradientTrackLineProps) {
         positions={outlinePositions}
         pathOptions={{
           color: "#ffffff",
-          weight: 8,
+          weight: 5,
           opacity: 0.88,
           ...ROUND_LINE,
         }}
@@ -38,7 +38,7 @@ export function GradientTrackLine({ track }: GradientTrackLineProps) {
         positions={outlinePositions}
         pathOptions={{
           color: "rgba(15,23,42,0.28)",
-          weight: 5,
+          weight: 3,
           opacity: 1,
           ...ROUND_LINE,
         }}
@@ -49,7 +49,7 @@ export function GradientTrackLine({ track }: GradientTrackLineProps) {
           positions={segment.positions}
           pathOptions={{
             color: segment.color,
-            weight: 6,
+            weight: 4,
             opacity: 1,
             ...ROUND_LINE,
           }}

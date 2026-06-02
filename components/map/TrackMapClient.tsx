@@ -1,6 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import type { OsmWaterPoint } from "@/lib/osm/water-points";
+import type { OsmCityLimitSign } from "@/lib/osm/city-limit-signs";
 import type { RouteWeatherSegment } from "@/lib/weather/types";
 import type { Poi, RoadbookBounds, TrackPoint } from "@/types/roadbook";
 
@@ -30,6 +32,18 @@ interface TrackMapClientProps {
   hoveredWeatherSegmentId?: number | null;
   onWeatherSegmentSelect?: (segmentId: number | null) => void;
   onWeatherSegmentHover?: (segmentId: number | null) => void;
+  addPoiMode?: boolean;
+  onMapPoiPlace?: (lat: number, lng: number) => void;
+  waterPoints?: OsmWaterPoint[];
+  addedOsmWaterIds?: Set<string>;
+  hoveredWaterPointId?: string | null;
+  onWaterPointSelect?: (point: OsmWaterPoint) => void;
+  onWaterPointHover?: (osmId: string | null) => void;
+  cityLimitSigns?: OsmCityLimitSign[];
+  addedOsmCityLimitIds?: Set<string>;
+  hoveredCityLimitId?: string | null;
+  onCityLimitSelect?: (sign: OsmCityLimitSign) => void;
+  onCityLimitHover?: (osmId: string | null) => void;
 }
 
 export function TrackMapClient(props: TrackMapClientProps) {

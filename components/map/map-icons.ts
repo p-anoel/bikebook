@@ -41,42 +41,48 @@ export const startMapIcon = L.divIcon({
   iconAnchor: [START_SIZE / 2, START_SIZE / 2],
 });
 
-const WIND_COLORS = {
-  headwind: "#ef4444",
-  tailwind: "#22c55e",
-  crosswind: "#f59e0b",
-} as const;
-
-export interface WindMapIconState {
-  selected?: boolean;
+export interface WaterPointMapIconState {
   hovered?: boolean;
+  added?: boolean;
 }
 
-export function createWindMapIcon(
-  windRelative: keyof typeof WIND_COLORS,
-  windDirectionDeg: number,
-  state: WindMapIconState = {},
-): L.DivIcon {
-  const { selected = false, hovered = false } = state;
-  const size = selected ? 22 : hovered ? 20 : 18;
-  const color = WIND_COLORS[windRelative];
-  const rotation = (windDirectionDeg + 180) % 360;
-  const ring = selected
-    ? `<div style="position:absolute;inset:-4px;border-radius:9999px;border:2px solid #f59e0b"></div>`
-    : hovered
-      ? `<div style="position:absolute;inset:-3px;border-radius:9999px;border:2px solid #60a5fa"></div>`
-      : "";
+export function createWaterPointMapIcon(state: WaterPointMapIconState = {}): L.DivIcon {
+  const { hovered = false, added = false } = state;
+  const size = hovered ? 20 : 18;
+  const fill = added ? "#94a3b8" : hovered ? "#0284c7" : "#0ea5e9";
 
   return L.divIcon({
     className: "",
     html: `<div style="position:relative;width:${size}px;height:${size}px">
-      ${ring}
-      <svg width="${size}" height="${size}" viewBox="0 0 24 24" style="transform:rotate(${rotation}deg);filter:drop-shadow(0 1px 2px rgba(0,0,0,.25))">
-        <path d="M12 3 L12 18 M12 18 L7 13 M12 18 L17 13" fill="none" stroke="${color}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg width="${size}" height="${size}" viewBox="0 0 24 24" style="filter:drop-shadow(0 1px 2px rgba(0,0,0,.28))">
+        <path d="M12 2.5c-3.2 0-5.8 2.4-5.8 5.4 0 4.1 5.8 11.1 5.8 11.1s5.8-7 5.8-11.1c0-3-2.6-5.4-5.8-5.4z" fill="${fill}" stroke="#fff" stroke-width="1.5"/>
       </svg>
     </div>`,
     iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    iconAnchor: [size / 2, size],
+  });
+}
+
+export interface CityLimitMapIconState {
+  hovered?: boolean;
+  added?: boolean;
+}
+
+export function createCityLimitMapIcon(state: CityLimitMapIconState = {}): L.DivIcon {
+  const { hovered = false, added = false } = state;
+  const size = hovered ? 22 : 20;
+  const border = added ? "#94a3b8" : hovered ? "#b91c1c" : "#dc2626";
+  const fill = added ? "#f4f4f5" : "#ffffff";
+
+  return L.divIcon({
+    className: "",
+    html: `<div style="position:relative;width:${size}px;height:${size}px">
+      <div style="width:${size}px;height:${Math.round(size * 0.72)}px;background:${fill};border:2px solid ${border};border-radius:2px;box-shadow:0 1px 3px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center">
+        <div style="width:${Math.round(size * 0.55)}px;height:2px;background:${border};border-radius:1px"></div>
+      </div>
+    </div>`,
+    iconSize: [size, Math.round(size * 0.72)],
+    iconAnchor: [size / 2, Math.round(size * 0.72) / 2],
   });
 }
 

@@ -8,6 +8,9 @@ import {
   Path,
   Line,
   Image,
+  Circle,
+  Rect,
+  G,
 } from "@react-pdf/renderer";
 import {
   elevationMarkerPoints,
@@ -21,9 +24,22 @@ import {
 } from "@/lib/pdf/chart-labels";
 import { layoutLabels, type LabelAnchor } from "@/lib/pdf/label-layout";
 import { SvgTooltipLabels } from "@/components/pdf/SvgTooltipLabel";
+import {
+  WeatherPdfSection,
+  type PdfWeatherMessages,
+} from "@/components/pdf/WeatherPdfSection";
 import { withPoiStats } from "@/lib/gpx/poi-intervals";
 import { detectClimbs } from "@/lib/pdf/elevation-chart";
+import {
+  buildLandscapeProfilePages,
+  climbsInDistanceRange,
+  endpointMarkersForChunk,
+  formatProfileChunkLabel,
+  landscapeStripHeightForPage,
+  poisInDistanceRange,
+} from "@/lib/pdf/profile-segments";
 import type { MapOverlayData } from "@/lib/pdf/map-overlay";
+import type { RouteWeatherSnapshot } from "@/lib/weather/types";
 import type { Roadbook } from "@/types/roadbook";
 
 export interface PdfMessages {
@@ -74,6 +90,9 @@ interface RoadbookPdfProps {
   messages: PdfMessages;
   mapImageSrc?: string;
   mapOverlay?: MapOverlayData;
+  /** When defined, renders the weather section (null → “not loaded” note). */
+  weatherSnapshot?: RouteWeatherSnapshot | null;
+  weatherMessages?: PdfWeatherMessages;
 }
 
 const PAGE_PADDING = 40;
@@ -82,8 +101,6 @@ const LANDSCAPE_CONTENT_WIDTH = 841.89 - PAGE_PADDING * 2;
 const CHART_INNER_PADDING = 16;
 const PORTRAIT_PROFILE_HEIGHT = 168;
 const PORTRAIT_PROFILE_TOP_PADDING = 34;
-const LANDSCAPE_PROFILE_HEIGHT = 220;
-const LANDSCAPE_PROFILE_TOP_PADDING = 34;
 const PORTRAIT_PROFILE_MAX_POINTS = 1200;
 const LANDSCAPE_PROFILE_MAX_POINTS = 5000;
 const CHART_PADDING = 12;
@@ -91,6 +108,12 @@ const CHART_PADDING = 12;
 /** Map slot inside the PDF chart box (full inner width, landscape ratio). */
 export const PDF_MAP_WIDTH = CONTENT_WIDTH - CHART_INNER_PADDING;
 export const PDF_MAP_HEIGHT = 240;
+
+/** Thinner strokes than the web map — same layering (outline + grade colors). */
+const PDF_TRACK_OUTLINE_WIDTH = 3;
+const PDF_TRACK_SEGMENT_WIDTH = 2;
+const PDF_ENDPOINT_RADIUS = 6;
+const PDF_FINISH_MARKER_SIZE = 12;
 
 const styles = StyleSheet.create({
   page: {
@@ -205,6 +228,13 @@ const styles = StyleSheet.create({
   },
   td: { fontSize: 8, lineHeight: 1.2 },
   landscapeHeader: { marginBottom: 12 },
+  profileStripBlock: { marginBottom: 8, width: "100%" },
+  profileStripLabel: {
+    fontSize: 8,
+    fontFamily: "Helvetica-Bold",
+    color: "#52525b",
+    marginBottom: 3,
+  },
 });
 
 interface ProfileLayoutInput {
@@ -216,6 +246,8 @@ interface ProfileLayoutInput {
   locale: string;
   messages: PdfMessages;
   poiGainById: Map<string, number>;
+  distanceDomain?: [number, number];
+  endpointFilter?: { showStart: boolean; showFinish: boolean };
 }
 
 function buildProfileLabelLayout({
@@ -227,6 +259,8 @@ function buildProfileLabelLayout({
   locale,
   messages,
   poiGainById,
+  distanceDomain,
+  endpointFilter,
 }: ProfileLayoutInput) {
   const profilePois = elevationPoiPoints(
     track,
@@ -235,6 +269,7 @@ function buildProfileLabelLayout({
     profileHeight,
     CHART_PADDING,
     topPadding,
+    distanceDomain,
   );
   const profileMarkers = elevationMarkerPoints(
     track,
@@ -242,6 +277,8 @@ function buildProfileLabelLayout({
     profileHeight,
     CHART_PADDING,
     topPadding,
+    distanceDomain,
+    endpointFilter,
   );
 
   const profileLabelAnchors: LabelAnchor[] = [
@@ -286,6 +323,7 @@ function buildProfileLabelLayout({
     profileHeight,
     CHART_PADDING,
     topPadding,
+    distanceDomain,
   );
 
   return layoutLabels(
@@ -306,6 +344,8 @@ export function RoadbookPdf({
   messages,
   mapImageSrc,
   mapOverlay,
+  weatherSnapshot,
+  weatherMessages,
 }: RoadbookPdfProps) {
   const { stats, track } = roadbook;
   const pois = withPoiStats(track, roadbook.pois);
@@ -328,16 +368,8 @@ export function RoadbookPdf({
     poiGainById,
   });
 
-  const landscapeProfileLabels = buildProfileLabelLayout({
-    track,
-    pois,
-    chartWidth: landscapeChartWidth,
-    profileHeight: LANDSCAPE_PROFILE_HEIGHT,
-    topPadding: LANDSCAPE_PROFILE_TOP_PADDING,
-    locale,
-    messages,
-    poiGainById,
-  });
+  const totalDistanceKm = (track[track.length - 1]?.distanceM ?? 0) / 1000;
+  const profileChunkPages = buildLandscapeProfilePages(totalDistanceKm);
 
   const MAP_LABEL_MARGIN = 18;
 
@@ -435,14 +467,73 @@ export function RoadbookPdf({
                     viewBox={`0 0 ${PDF_MAP_WIDTH} ${PDF_MAP_HEIGHT}`}
                     style={styles.mapOverlay}
                   >
-                    <Path
-                      d={mapOverlay.trackPath}
-                      stroke="#18181b"
-                      strokeWidth={3}
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
+                    {mapOverlay.trackOutlinePath ? (
+                      <Path
+                        d={mapOverlay.trackOutlinePath}
+                        stroke="#ffffff"
+                        strokeWidth={PDF_TRACK_OUTLINE_WIDTH}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        opacity={0.88}
+                      />
+                    ) : null}
+                    {mapOverlay.trackSegments.map((segment, index) => (
+                      <Path
+                        key={`${segment.color}-${index}`}
+                        d={segment.d}
+                        stroke={segment.color}
+                        strokeWidth={PDF_TRACK_SEGMENT_WIDTH}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ))}
+                    {mapOverlay.markers.map((marker) => {
+                      if (marker.kind === "start") {
+                        return (
+                          <Circle
+                            key={marker.kind}
+                            cx={marker.x}
+                            cy={marker.y}
+                            r={PDF_ENDPOINT_RADIUS}
+                            fill="#22c55e"
+                            stroke="#ffffff"
+                            strokeWidth={2}
+                          />
+                        );
+                      }
+
+                      const half = PDF_FINISH_MARKER_SIZE / 2;
+                      const cell = PDF_FINISH_MARKER_SIZE / 2;
+                      return (
+                        <G key={marker.kind}>
+                          <Rect
+                            x={marker.x - half}
+                            y={marker.y - half}
+                            width={PDF_FINISH_MARKER_SIZE}
+                            height={PDF_FINISH_MARKER_SIZE}
+                            fill="#ffffff"
+                            stroke="#18181b"
+                            strokeWidth={1.5}
+                          />
+                          <Rect
+                            x={marker.x - half}
+                            y={marker.y - half}
+                            width={cell}
+                            height={cell}
+                            fill="#18181b"
+                          />
+                          <Rect
+                            x={marker.x}
+                            y={marker.y}
+                            width={cell}
+                            height={cell}
+                            fill="#18181b"
+                          />
+                        </G>
+                      );
+                    })}
                     <SvgTooltipLabels labels={mapLabels} />
                   </Svg>
                 </View>
@@ -473,10 +564,10 @@ export function RoadbookPdf({
       </Page>
 
       {pois.length > 0 ? (
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" style={styles.page} wrap>
           <Text style={styles.sectionTitle}>{messages.poiSection}</Text>
           <View>
-            <View style={styles.tableHeader}>
+            <View style={styles.tableHeader} wrap={false}>
               <Text style={[styles.th, styles.colNumber]}>{messages.poiColumns.number}</Text>
               <Text style={[styles.th, styles.colName]}>{messages.poiColumns.name}</Text>
               <Text style={[styles.th, styles.colKm]}>{messages.poiColumns.kilometrage}</Text>
@@ -487,7 +578,7 @@ export function RoadbookPdf({
               <Text style={[styles.th, styles.colDesc]}>{messages.poiColumns.description}</Text>
             </View>
             {pois.map((poi) => (
-              <View key={poi.id} style={styles.tableRow}>
+              <View key={poi.id} style={styles.tableRow} wrap={false}>
                 <Text style={[styles.td, styles.colNumber, { color: "#1d4ed8", fontFamily: "Helvetica-Bold" }]}>
                   {poi.number}
                 </Text>
@@ -518,11 +609,22 @@ export function RoadbookPdf({
         </Page>
       ) : null}
 
+      {weatherMessages !== undefined ? (
+        <Page size="A4" style={styles.page} wrap>
+          <WeatherPdfSection
+            snapshot={weatherSnapshot}
+            locale={locale}
+            kmUnit={messages.km}
+            messages={weatherMessages}
+          />
+        </Page>
+      ) : null}
+
       {climbs.length > 0 ? (
-        <Page size="A4" style={styles.page}>
+        <Page size="A4" style={styles.page} wrap>
           <Text style={styles.sectionTitle}>{messages.climbsSection}</Text>
           <View>
-            <View style={styles.tableHeader}>
+            <View style={styles.tableHeader} wrap={false}>
               <Text style={[styles.th, styles.colClimbNum]}>{messages.climbColumns.number}</Text>
               <Text style={[styles.th, styles.colClimbStart]}>{messages.climbColumns.start}</Text>
               <Text style={[styles.th, styles.colClimbGain]}>{messages.climbColumns.gain}</Text>
@@ -530,7 +632,7 @@ export function RoadbookPdf({
               <Text style={[styles.th, styles.colClimbGrade]}>{messages.climbColumns.grade}</Text>
             </View>
             {climbs.map((climb) => (
-              <View key={climb.id} style={styles.tableRow}>
+              <View key={climb.id} style={styles.tableRow} wrap={false}>
                 <Text style={[styles.td, styles.colClimbNum, { color: "#b45309", fontFamily: "Helvetica-Bold" }]}>
                   {climb.id}
                 </Text>
@@ -552,25 +654,75 @@ export function RoadbookPdf({
         </Page>
       ) : null}
 
-      <Page size="A4" orientation="landscape" style={styles.page}>
-        <View style={styles.landscapeHeader}>
-          <Text style={styles.title}>{roadbook.name}</Text>
-          <Text style={styles.sectionTitle}>{messages.profileDetailSection}</Text>
-        </View>
-        <View style={styles.chartBox}>
-          <ElevationProfileChart
-            track={track}
-            width={landscapeChartWidth}
-            height={LANDSCAPE_PROFILE_HEIGHT}
-            locale={locale}
-            labels={landscapeProfileLabels}
-            kmUnit={messages.km}
-            seaLevelLabel={messages.seaLevel}
-            climbs={climbs}
-            maxProfilePoints={LANDSCAPE_PROFILE_MAX_POINTS}
-          />
-        </View>
-      </Page>
+      {profileChunkPages.map((pageChunks, pageIndex) => {
+        const stripHeight = landscapeStripHeightForPage(pageChunks.length);
+        const stripTopPadding = 8;
+
+        return (
+          <Page
+            key={`profile-detail-${pageIndex}`}
+            size="A4"
+            orientation="landscape"
+            style={styles.page}
+            wrap
+          >
+            <View style={styles.landscapeHeader} wrap={false}>
+              <Text style={styles.title}>{roadbook.name}</Text>
+              <Text style={styles.sectionTitle}>{messages.profileDetailSection}</Text>
+            </View>
+            <View style={styles.chartBox}>
+              {pageChunks.map((chunk) => {
+                const distanceDomain: [number, number] = [chunk.startKm, chunk.endKm];
+                const segmentPois = poisInDistanceRange(pois, chunk.startKm, chunk.endKm);
+                const segmentClimbs = climbsInDistanceRange(
+                  climbs,
+                  chunk.startKm,
+                  chunk.endKm,
+                );
+                const endpointFilter = endpointMarkersForChunk(
+                  track,
+                  chunk.startKm,
+                  chunk.endKm,
+                );
+                const stripLabels = buildProfileLabelLayout({
+                  track,
+                  pois: segmentPois,
+                  chartWidth: landscapeChartWidth,
+                  profileHeight: stripHeight,
+                  topPadding: stripTopPadding,
+                  locale,
+                  messages,
+                  poiGainById,
+                  distanceDomain,
+                  endpointFilter,
+                });
+
+                return (
+                  <View key={chunk.index} style={styles.profileStripBlock} wrap={false}>
+                    <Text style={styles.profileStripLabel}>
+                      {formatProfileChunkLabel(chunk.startKm, chunk.endKm, locale)}
+                    </Text>
+                    <ElevationProfileChart
+                      track={track}
+                      width={landscapeChartWidth}
+                      height={stripHeight}
+                      locale={locale}
+                      labels={stripLabels}
+                      kmUnit={messages.km}
+                      seaLevelLabel={messages.seaLevel}
+                      climbs={segmentClimbs}
+                      segmentClimbs={segmentClimbs}
+                      maxProfilePoints={LANDSCAPE_PROFILE_MAX_POINTS}
+                      variant="strip"
+                      distanceDomain={distanceDomain}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          </Page>
+        );
+      })}
     </Document>
   );
 }

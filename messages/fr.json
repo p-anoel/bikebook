@@ -27,12 +27,27 @@
   },
   "roadbook": {
     "title": "Road book",
+    "exportGpx": "Télécharger GPX",
     "stats": {
       "distance": "Distance",
       "elevationGain": "D+",
       "elevationLoss": "D−",
       "minElevation": "Alt. min",
       "maxElevation": "Alt. max"
+    },
+    "sections": {
+      "route": "Parcours",
+      "routeDesc": "Carte, pente et profil altimétrique",
+      "poi": "Points d'intérêt",
+      "poiDesc": "Waypoints du roadbook, points d'eau et panneaux de commune à proximité",
+      "poiManual": "Mes POI",
+      "poiManualDesc": "Ajouter, modifier et parcourir vos points",
+      "poiWater": "Points d'eau OSM",
+      "poiWaterDesc": "Recherche OpenStreetMap le long du parcours",
+      "poiCityLimit": "Panneaux de commune",
+      "poiCityLimitDesc": "Panneaux city_limit OpenStreetMap le long du parcours",
+      "weather": "Météo et planification",
+      "weatherDesc": "Prévisions, vent et segments horaires"
     },
     "mapTitle": "Carte du parcours",
     "mapLegend": {
@@ -44,7 +59,7 @@
     },
     "elevationTitle": "Profil altimétrique",
     "poiTitle": "Points d'intérêt",
-    "poiEmpty": "Aucun waypoint trouvé dans le GPX",
+    "poiEmpty": "Aucun waypoint dans le GPX. Ajoutez des POI ci-dessous ou sur la carte.",
     "poiHint": "Survolez ou cliquez sur une ligne pour repérer le POI sur la carte et le profil.",
     "poiDistance": "Km {distance}",
     "poiInterval": "+{distance} km",
@@ -92,6 +107,136 @@
     },
     "noData": "Aucune trace chargée. Importez un fichier GPX pour commencer.",
     "goUpload": "Importer un GPX",
+    "poiManage": {
+      "addOnMap": "Placer sur la carte",
+      "cancelMapMode": "Annuler le placement",
+      "mapModeHint": "Cliquez sur le parcours pour placer le POI.",
+      "mapModeBanner": "Mode placement POI",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Ex. Ravito, col…",
+      "descriptionLabel": "Description (optionnel)",
+      "descriptionPlaceholder": "Note libre",
+      "distanceLabel": "Km depuis le départ (max. {max})",
+      "addAtKm": "Ajouter au km",
+      "saveEdit": "Enregistrer",
+      "delete": "Supprimer",
+      "editPoi": "Modifier",
+      "deletePoi": "Supprimer",
+      "clearSelection": "Désélectionner",
+      "inMyPois": "Déjà dans mes POI",
+      "addToMyPois": "Ajouter aux POI",
+      "removeFromMyPois": "Retirer des POI",
+      "defaultName": "POI {index}",
+      "water": {
+        "search": "Chercher points d'eau",
+        "searching": "Recherche…",
+        "fetchError": "Impossible de charger les points d'eau.",
+        "resultsCount": "{count, plural, one {# point d'eau à proximité} other {# points d'eau à proximité}}",
+        "defaultName": "Point d'eau",
+        "kmOnTrack": "{km} km sur le tracé",
+        "physicalSignOffset": "Point physique à {distance} m",
+        "alreadyAdded": "Déjà dans mes POI",
+        "mapAddHint": "Cliquer pour ajouter aux POI",
+        "types": {
+          "generic": "Point d'eau",
+          "spring": "Source naturelle",
+          "water_well": "Puits",
+          "water_tap": "Robinet (eau)",
+          "drinking_water": "Point d'eau potable",
+          "drinking_water_fountain": "Fontaine à boire",
+          "drinking_water_water_tap": "Borne-fontaine",
+          "drinking_water_spring_box": "Abreuvoir / captage",
+          "drinking_water_hand_pump": "Pompe à main",
+          "drinking_water_bottle_refill": "Remplissage de gourdes",
+          "drinking_water_jug": "Cruche d'eau",
+          "drinking_water_yes": "Eau potable",
+          "amenity_fountain": "Fontaine",
+          "amenity_bakery": "Boulangerie",
+          "amenity_bar": "Bar",
+          "amenity_cafe": "Café",
+          "amenity_cemetery": "Cimetière",
+          "amenity_pub": "Pub",
+          "amenity_restaurant": "Restaurant",
+          "amenity_toilets": "Toilettes"
+        },
+        "details": {
+          "access": {
+            "yes": "Accès libre",
+            "no": "Accès interdit",
+            "private": "Accès privé",
+            "permissive": "Accès toléré",
+            "customers": "Clients uniquement",
+            "destination": "Destination uniquement",
+            "permit": "Sur autorisation"
+          },
+          "drinking_water_legal": {
+            "yes": "Eau potable autorisée",
+            "no": "Eau non potable",
+            "discouraged": "Eau potable déconseillée"
+          },
+          "seasonal": {
+            "yes": "Saisonnier",
+            "no": "Toute l'année",
+            "summer": "Été uniquement",
+            "winter": "Hiver uniquement",
+            "spring": "Printemps uniquement",
+            "autumn": "Automne uniquement"
+          },
+          "fee": {
+            "yes": "Payant",
+            "no": "Gratuit"
+          },
+          "bottle": {
+            "yes": "Remplissage de gourdes",
+            "no": "Pas de remplissage de gourdes"
+          },
+          "drinkable": {
+            "yes": "Eau potable",
+            "no": "Eau non potable"
+          },
+          "pump": {
+            "yes": "Pompe",
+            "manual": "Pompe manuelle",
+            "electric": "Pompe électrique"
+          },
+          "water_source": {
+            "spring": "Source",
+            "groundwater": "Eau souterraine",
+            "tap": "Eau du réseau",
+            "stream": "Cours d'eau",
+            "well": "Puits"
+          },
+          "covered": {
+            "yes": "Abrité",
+            "no": "Non abrité"
+          },
+          "operator": "Géré par {name}"
+        }
+      },
+      "cityLimit": {
+        "search": "Chercher panneaux de commune",
+        "searching": "Recherche…",
+        "fetchError": "Impossible de charger les panneaux de commune.",
+        "resultsCount": "{count, plural, one {# panneau d'entrée sur le tracé} other {# panneaux d'entrée sur le tracé}} (≤ {maxDistance} m)",
+        "noOnTrackResults": "Aucun panneau d'entrée de commune sur le tracé (≤ {maxDistance} m).",
+        "defaultName": "Commune",
+        "poiName": {
+          "generic": "Panneau commune {name}",
+          "entry": "Entrée {name}",
+          "exit": "Sortie {name}",
+          "both": "Entrée / sortie {name}"
+        },
+        "kmOnTrack": "{km} km sur le tracé",
+        "alreadyAdded": "Déjà dans mes POI",
+        "mapAddHint": "Cliquer pour ajouter aux POI",
+        "types": {
+          "generic": "Panneau de commune",
+          "entry": "Entrée de commune",
+          "exit": "Sortie de commune",
+          "both": "Entrée / sortie de commune"
+        }
+      }
+    },
     "weather": {
       "title": "Météo et vent",
       "planTitle": "Planification du parcours",
@@ -208,6 +353,12 @@
       "gain": "D+",
       "length": "Longueur",
       "grade": "Pente moy."
+    },
+    "weatherSection": "Météo et vent",
+    "weatherNotLoaded": "Météo non chargée — actualisez la météo sur la page avant l'export pour inclure les prévisions.",
+    "weather": {
+      "ridePlanTitle": "Planification",
+      "summaryTitle": "Synthèse"
     }
   },
   "a11y": {

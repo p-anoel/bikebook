@@ -147,6 +147,33 @@ describe("buildPdfElevationChartModel", () => {
     expect(model.xGridLines.length).toBe(3);
     expect(model.layout.plotBottom - model.layout.plotTop).toBeLessThan(30);
   });
+
+  it("places strip x-axis labels in absolute km for a distance domain", () => {
+    const longTrack: TrackPoint[] = Array.from({ length: 101 }, (_, km) => ({
+      lat: 45 + km * 0.01,
+      lng: 6,
+      ele: 100 + km,
+      distanceM: km * 1000,
+    }));
+
+    const model = buildPdfElevationChartModel(
+      longTrack,
+      400,
+      40,
+      "fr",
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      { variant: "strip", distanceDomain: [50, 100] },
+    );
+
+    expect(model.xTicks.length).toBeGreaterThan(0);
+    expect(model.xTicks[0].value).toBe(50);
+    expect(model.xTicks[model.xTicks.length - 1].value).toBe(100);
+    expect(model.xTicks.every((tick) => tick.x >= model.layout.plotLeft)).toBe(true);
+    expect(model.xTicks.every((tick) => tick.x <= model.layout.plotRight)).toBe(true);
+  });
 });
 
 describe("buildPdfClimbHighlights", () => {

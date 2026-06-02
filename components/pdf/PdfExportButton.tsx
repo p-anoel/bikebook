@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { RoadbookPdf, PDF_MAP_HEIGHT, PDF_MAP_WIDTH, type PdfMessages } from "@/components/pdf/RoadbookPdf";
+import type { PdfWeatherMessages } from "@/components/pdf/WeatherPdfSection";
 import { buildMapOverlay } from "@/lib/pdf/map-overlay";
+import type { RouteWeatherSnapshot } from "@/lib/weather/types";
 import {
   expandBounds,
   pdfMapDisplaySize,
@@ -17,6 +19,8 @@ import type { Roadbook } from "@/types/roadbook";
 interface PdfExportButtonProps {
   roadbook: Roadbook;
   locale: string;
+  /** Client weather state from WeatherPanel; omit to exclude the weather section. */
+  weatherSnapshot?: RouteWeatherSnapshot | null;
 }
 
 /** @deprecated import PDF_MAP_WIDTH / PDF_MAP_HEIGHT from RoadbookPdf */
@@ -50,11 +54,21 @@ async function fetchStaticMap(
   return (await response.json()) as StaticMapResponse;
 }
 
-export function PdfExportButton({ roadbook, locale }: PdfExportButtonProps) {
+export function PdfExportButton({
+  roadbook,
+  locale,
+  weatherSnapshot,
+}: PdfExportButtonProps) {
   const t = useTranslations("common");
   const tPdf = useTranslations("pdf");
   const tRoadbook = useTranslations("roadbook");
+  const tWeather = useTranslations("roadbook.weather");
   const [isExporting, setIsExporting] = useState(false);
+
+  const weatherFmt = useMemo(
+    () => new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }),
+    [locale],
+  );
 
   const mapDisplaySize = useMemo(() => {
     const geoBounds = expandBounds(roadbook.bounds, 0.05);
@@ -67,6 +81,68 @@ export function PdfExportButton({ roadbook, locale }: PdfExportButtonProps) {
       const generatedDate = new Date().toLocaleDateString(locale, {
         dateStyle: "long",
       });
+
+      const formatWeatherNum = (n: number) => weatherFmt.format(n);
+
+      const weatherMessages: PdfWeatherMessages | undefined =
+        weatherSnapshot !== undefined
+          ? {
+              section: tPdf("weatherSection"),
+              notLoaded: tPdf("weatherNotLoaded"),
+              ridePlanTitle: tPdf("weather.ridePlanTitle"),
+              summaryTitle: tPdf("weather.summaryTitle"),
+              departure: tWeather("departureLabel"),
+              arrival: tWeather("summary.arrival"),
+              plannedSpeed: tWeather("summary.plannedSpeed"),
+              pause: tWeather("summary.pause"),
+              dominant: tWeather("summary.dominant"),
+              avgWind: tWeather("summary.avgWind"),
+              temp: tWeather("summary.temp"),
+              precip: tWeather("summary.precip"),
+              windSpeed: (speed) =>
+                tWeather("windSpeed", { speed: formatWeatherNum(speed) }),
+              windComponent: (value) =>
+                tWeather("windComponent", { value: formatWeatherNum(value) }),
+              temperature: (value) =>
+                tWeather("temperature", { value: formatWeatherNum(value) }),
+              precipitation: (value) =>
+                tWeather("precipitation", { value: formatWeatherNum(value) }),
+              tempRange: (min, max) =>
+                tWeather("tempRange", {
+                  min: formatWeatherNum(min),
+                  max: formatWeatherNum(max),
+                }),
+              pauseSummary: (minutes) => tWeather("pauseSummary", { minutes }),
+              windRelative: {
+                headwind: tWeather("windRelative.headwind"),
+                tailwind: tWeather("windRelative.tailwind"),
+                crosswind: tWeather("windRelative.crosswind"),
+              },
+              weatherCode: {
+                clear: tWeather("weatherCode.clear"),
+                mainlyClear: tWeather("weatherCode.mainlyClear"),
+                partlyCloudy: tWeather("weatherCode.partlyCloudy"),
+                overcast: tWeather("weatherCode.overcast"),
+                fog: tWeather("weatherCode.fog"),
+                drizzle: tWeather("weatherCode.drizzle"),
+                rain: tWeather("weatherCode.rain"),
+                snow: tWeather("weatherCode.snow"),
+                thunderstorm: tWeather("weatherCode.thunderstorm"),
+                unknown: tWeather("weatherCode.unknown"),
+              },
+              columns: {
+                number: tWeather("columns.number"),
+                km: tWeather("columns.km"),
+                passage: tWeather("columns.passage"),
+                wind: tWeather("columns.wind"),
+                speed: tWeather("columns.speed"),
+                component: tWeather("columns.component"),
+                temp: tWeather("columns.temp"),
+                precip: tWeather("columns.precip"),
+                sky: tWeather("columns.sky"),
+              },
+            }
+          : undefined;
 
       const messages: PdfMessages = {
         title: tPdf("title"),
@@ -128,6 +204,8 @@ export function PdfExportButton({ roadbook, locale }: PdfExportButtonProps) {
           messages={messages}
           mapImageSrc={mapImageSrc}
           mapOverlay={mapOverlay}
+          weatherSnapshot={weatherSnapshot}
+          weatherMessages={weatherMessages}
         />,
       ).toBlob();
 
@@ -140,7 +218,7 @@ export function PdfExportButton({ roadbook, locale }: PdfExportButtonProps) {
     } finally {
       setIsExporting(false);
     }
-  }, [roadbook, locale, mapDisplaySize, tPdf, tRoadbook]);
+  }, [roadbook, locale, mapDisplaySize, tPdf, tRoadbook, tWeather, weatherSnapshot, weatherFmt]);
 
   return (
     <Button

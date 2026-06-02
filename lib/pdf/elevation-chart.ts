@@ -4,9 +4,11 @@ import { sortPoisByDistance } from "@/lib/gpx/poi";
 import {
   buildDistanceTicksForRange,
   buildGradientProfile,
+  buildGradientProfileForRange,
   colorForGradePct,
   detectClimbs,
   getElevationAxisConfig,
+  sliceTrackByDistance,
   type ClimbSegment,
 } from "@/lib/gpx/gradient";
 
@@ -43,6 +45,7 @@ export interface ChartLayout {
   plotRight: number;
   plotBottom: number;
   maxDistanceKm: number;
+  distanceDomain: [number, number];
   yDomain: [number, number];
   areaBaseline: number;
   showSeaLevel: boolean;
@@ -168,6 +171,18 @@ export function getElevationChartDomain(track: TrackPoint[]): [number, number] {
   return [0, roundDistanceKm(maxDistanceKm)];
 }
 
+function elevationAxisForTrack(
+  track: TrackPoint[],
+  distanceDomain?: [number, number],
+): ReturnType<typeof getElevationAxisConfig> {
+  if (!distanceDomain) return getElevationAxisConfig(track);
+
+  const [startKm, endKm] = distanceDomain;
+  const slice = sliceTrackByDistance(track, startKm, endKm);
+  if (slice.length >= 2) return getElevationAxisConfig(slice);
+  return getElevationAxisConfig(track);
+}
+
 export function buildChartLayout(
   track: TrackPoint[],
   width: number,
@@ -176,11 +191,18 @@ export function buildChartLayout(
   plotTop = PDF_PROFILE_TOP_PADDING,
   plotRight?: number,
   plotBottom?: number,
+  distanceDomain?: [number, number],
 ): ChartLayout {
   const right = plotRight ?? width - PDF_PROFILE_RIGHT_PADDING;
   const bottom = plotBottom ?? height - PDF_PROFILE_BOTTOM_PADDING;
-  const maxDistanceKm = (track[track.length - 1]?.distanceM ?? 0) / 1000;
-  const { yDomain, areaBaseline, showSeaLevel } = getElevationAxisConfig(track);
+  const domainStart = distanceDomain?.[0] ?? 0;
+  const domainEnd =
+    distanceDomain?.[1] ?? (track[track.length - 1]?.distanceM ?? 0) / 1000;
+  const maxDistanceKm = Math.max(domainEnd - domainStart, 0);
+  const { yDomain, areaBaseline, showSeaLevel } = elevationAxisForTrack(
+    track,
+    distanceDomain,
+  );
   const plotWidth = right - plotLeft;
   const plotHeight = bottom - plotTop;
   const ySpan = yDomain[1] - yDomain[0] || 1;
@@ -189,7 +211,12 @@ export function buildChartLayout(
     round(plotTop + plotHeight - ((elevation - yDomain[0]) / ySpan) * plotHeight);
 
   const toXY = (distanceKm: number, elevation: number) => ({
-    x: round(plotLeft + (maxDistanceKm > 0 ? (distanceKm / maxDistanceKm) * plotWidth : 0)),
+    x: round(
+      plotLeft +
+        (maxDistanceKm > 0
+          ? ((distanceKm - domainStart) / maxDistanceKm) * plotWidth
+          : 0),
+    ),
     y: elevationToY(elevation),
   });
 
@@ -201,6 +228,7 @@ export function buildChartLayout(
     plotRight: right,
     plotBottom: bottom,
     maxDistanceKm,
+    distanceDomain: [domainStart, domainEnd],
     yDomain,
     areaBaseline,
     showSeaLevel,
@@ -238,24 +266,26 @@ function buildElevationTicks(yDomain: [number, number], maxTicks = 6): number[] 
 export interface PdfElevationChartOptions {
   maxProfilePoints?: number;
   variant?: "standard" | "strip";
+  distanceDomain?: [number, number];
+  segmentClimbs?: ClimbSegment[];
 }
 
-function buildEveryKmGrid(maxDistanceKm: number): number[] {
-  const max = Math.ceil(maxDistanceKm);
-  return Array.from({ length: max + 1 }, (_, km) => km);
-}
+/** Integer km grid lines within a distance domain (absolute route km). */
+function buildEveryKmGridInRange(startKm: number, endKm: number): number[] {
+  if (endKm <= startKm) {
+    return [roundDistanceKm(startKm)];
+  }
 
-function buildStripXLabels(maxDistanceKm: number): number[] {
-  const max = Math.ceil(maxDistanceKm);
-  const step = max <= 100 ? 1 : max <= 200 ? 2 : 5;
-  const labels: number[] = [];
-  for (let km = 0; km <= max; km += step) {
-    labels.push(km);
+  const ticks: number[] = [];
+  const first = Math.floor(startKm + 1e-9);
+  const last = Math.ceil(endKm - 1e-9);
+  for (let km = first; km <= last; km += 1) {
+    if (km >= startKm - 1e-6 && km <= endKm + 1e-6) {
+      ticks.push(km);
+    }
   }
-  if (labels[labels.length - 1] !== max) {
-    labels.push(max);
-  }
-  return labels;
+
+  return ticks.length > 0 ? ticks : [roundDistanceKm(startKm), roundDistanceKm(endKm)];
 }
 
 export function buildPdfElevationChartModel(
@@ -276,6 +306,7 @@ export function buildPdfElevationChartModel(
   const resolvedPlotLeft = plotLeft ?? PDF_PROFILE_LEFT_GUTTER;
   const resolvedPlotRight = plotRight ?? width - (isStrip ? 8 : PDF_PROFILE_RIGHT_PADDING);
 
+  const distanceDomain = options.distanceDomain;
   const layout = buildChartLayout(
     track,
     width,
@@ -284,8 +315,19 @@ export function buildPdfElevationChartModel(
     resolvedPlotTop,
     resolvedPlotRight,
     resolvedPlotBottom,
+    distanceDomain,
   );
-  const { profile } = buildGradientProfile(track, options.maxProfilePoints);
+  const segmentClimbs = options.segmentClimbs ?? detectClimbs(track);
+  const profile =
+    distanceDomain != null
+      ? buildGradientProfileForRange(
+          track,
+          distanceDomain[0],
+          distanceDomain[1],
+          segmentClimbs,
+          options.maxProfilePoints,
+        )
+      : buildGradientProfile(track, options.maxProfilePoints).profile;
   const baselineY = layout.elevationToY(layout.areaBaseline);
 
   const gradeSegments: PdfGradeSegment[] = [];
@@ -319,21 +361,17 @@ export function buildPdfElevationChartModel(
   });
   const fmtY = new Intl.NumberFormat(locale, { maximumFractionDigits: 0 });
 
+  const [domainStart, domainEnd] = layout.distanceDomain;
   const xGridKm = isStrip
-    ? buildEveryKmGrid(layout.maxDistanceKm)
-    : buildDistanceTicksForRange(0, layout.maxDistanceKm);
-  const xLabelKm = isStrip
-    ? buildStripXLabels(layout.maxDistanceKm)
-    : xGridKm;
-  const xLabelSet = new Set(xLabelKm);
+    ? buildEveryKmGridInRange(domainStart, domainEnd)
+    : buildDistanceTicksForRange(domainStart, domainEnd);
+  const xLabelKm = buildDistanceTicksForRange(domainStart, domainEnd);
 
   const xGridLines = xGridKm.map((km) => layout.toXY(km, layout.yDomain[0]).x);
-  const xTicks: PdfAxisTick[] = xGridKm
-    .filter((km) => xLabelSet.has(km))
-    .map((km) => {
-      const { x } = layout.toXY(km, layout.yDomain[0]);
-      return { value: km, x, y: layout.plotBottom, label: fmtX.format(km) };
-    });
+  const xTicks: PdfAxisTick[] = xLabelKm.map((km) => {
+    const { x } = layout.toXY(km, layout.yDomain[0]);
+    return { value: km, x, y: layout.plotBottom, label: fmtX.format(km) };
+  });
 
   const yTickValues = buildElevationTicks(layout.yDomain, isStrip ? 6 : 6);
   const yGridLines = yTickValues.map((elevation) => layout.elevationToY(elevation));
@@ -438,10 +476,20 @@ export function elevationProfilePathD(
   height: number,
   padding: number,
   topPadding = padding,
+  distanceDomain?: [number, number],
 ): string {
   if (track.length === 0) return "";
 
-  const layout = buildChartLayout(track, width, height, padding, topPadding, width - padding);
+  const layout = buildChartLayout(
+    track,
+    width,
+    height,
+    padding,
+    topPadding,
+    width - padding,
+    undefined,
+    distanceDomain,
+  );
   const points = sampleTrack(track).map((point) =>
     layout.toXY(point.distanceM / 1000, point.ele),
   );
@@ -455,8 +503,18 @@ export function elevationProfilePoints(
   height: number,
   padding: number,
   topPadding = padding,
+  distanceDomain?: [number, number],
 ): Array<{ x: number; y: number }> {
-  const layout = buildChartLayout(track, width, height, padding, topPadding, width - padding);
+  const layout = buildChartLayout(
+    track,
+    width,
+    height,
+    padding,
+    topPadding,
+    width - padding,
+    undefined,
+    distanceDomain,
+  );
   const points = sampleTrack(track).map((point) =>
     layout.toXY(point.distanceM / 1000, point.ele),
   );
@@ -470,8 +528,18 @@ export function elevationPoiPoints(
   height: number,
   padding: number,
   topPadding = padding,
+  distanceDomain?: [number, number],
 ): ChartPoiMarker[] {
-  const layout = buildChartLayout(track, width, height, padding, topPadding, width - padding);
+  const layout = buildChartLayout(
+    track,
+    width,
+    height,
+    padding,
+    topPadding,
+    width - padding,
+    undefined,
+    distanceDomain,
+  );
 
   return sortPoisByDistance(pois).map((poi, index) => {
     const elevation = getElevationAtDistance(track, poi.distanceFromStartM);
@@ -496,10 +564,27 @@ export function elevationMarkerPoints(
   height: number,
   padding: number,
   topPadding = padding,
+  distanceDomain?: [number, number],
+  endpointFilter?: { showStart: boolean; showFinish: boolean },
 ): ChartEndpointMarker[] {
-  const layout = buildChartLayout(track, width, height, padding, topPadding, width - padding);
+  const layout = buildChartLayout(
+    track,
+    width,
+    height,
+    padding,
+    topPadding,
+    width - padding,
+    undefined,
+    distanceDomain,
+  );
 
-  return buildStartFinishMarkers(track).map((marker) => {
+  const markers = buildStartFinishMarkers(track).filter((marker) => {
+    if (!endpointFilter) return true;
+    if (marker.kind === "start") return endpointFilter.showStart;
+    return endpointFilter.showFinish;
+  });
+
+  return markers.map((marker) => {
     const { x, y } = layout.toXY(marker.distanceKm, marker.elevation);
     return { kind: marker.kind, distanceKm: marker.distanceKm, elevationM: marker.elevation, x, y };
   });

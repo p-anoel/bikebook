@@ -27,12 +27,27 @@
   },
   "roadbook": {
     "title": "Road book",
+    "exportGpx": "Download GPX",
     "stats": {
       "distance": "Distance",
       "elevationGain": "Ascent",
       "elevationLoss": "Descent",
       "minElevation": "Min elev.",
       "maxElevation": "Max elev."
+    },
+    "sections": {
+      "route": "Route",
+      "routeDesc": "Map, grade legend, and elevation profile",
+      "poi": "Points of interest",
+      "poiDesc": "Roadbook waypoints, water points and city limit signs nearby",
+      "poiManual": "My POIs",
+      "poiManualDesc": "Add, edit, and browse your points",
+      "poiWater": "OSM water points",
+      "poiWaterDesc": "OpenStreetMap search along the route",
+      "poiCityLimit": "City limit signs",
+      "poiCityLimitDesc": "OpenStreetMap city_limit signs along the route",
+      "weather": "Weather and planning",
+      "weatherDesc": "Forecasts, wind, and hourly segments"
     },
     "mapTitle": "Route map",
     "mapLegend": {
@@ -44,7 +59,7 @@
     },
     "elevationTitle": "Elevation profile",
     "poiTitle": "Points of interest",
-    "poiEmpty": "No waypoints found in the GPX",
+    "poiEmpty": "No waypoints in the GPX. Add POIs below or on the map.",
     "poiHint": "Hover or click a row to locate the POI on the map and profile.",
     "poiDistance": "Km {distance}",
     "poiInterval": "+{distance} km",
@@ -92,6 +107,136 @@
     },
     "noData": "No track loaded. Upload a GPX file to get started.",
     "goUpload": "Upload GPX",
+    "poiManage": {
+      "addOnMap": "Place on map",
+      "cancelMapMode": "Cancel placement",
+      "mapModeHint": "Click on the route to place the POI.",
+      "mapModeBanner": "POI placement mode",
+      "nameLabel": "Name",
+      "namePlaceholder": "e.g. Feed zone, pass…",
+      "descriptionLabel": "Description (optional)",
+      "descriptionPlaceholder": "Free note",
+      "distanceLabel": "Km from start (max. {max})",
+      "addAtKm": "Add at km",
+      "saveEdit": "Save",
+      "delete": "Delete",
+      "editPoi": "Edit",
+      "deletePoi": "Delete",
+      "clearSelection": "Clear selection",
+      "inMyPois": "Already in my POIs",
+      "addToMyPois": "Add to POIs",
+      "removeFromMyPois": "Remove from POIs",
+      "defaultName": "POI {index}",
+      "water": {
+        "search": "Find water points",
+        "searching": "Searching…",
+        "fetchError": "Could not load water points.",
+        "resultsCount": "{count, plural, one {# water point nearby} other {# water points nearby}}",
+        "defaultName": "Water point",
+        "kmOnTrack": "{km} km on route",
+        "physicalSignOffset": "Physical point {distance} m away",
+        "alreadyAdded": "Already in my POIs",
+        "mapAddHint": "Click to add to POIs",
+        "types": {
+          "generic": "Water point",
+          "spring": "Natural spring",
+          "water_well": "Water well",
+          "water_tap": "Water tap",
+          "drinking_water": "Drinking water",
+          "drinking_water_fountain": "Drinking fountain",
+          "drinking_water_water_tap": "Water tap (drinking)",
+          "drinking_water_spring_box": "Spring box / trough",
+          "drinking_water_hand_pump": "Hand pump",
+          "drinking_water_bottle_refill": "Bottle refill",
+          "drinking_water_jug": "Water jug",
+          "drinking_water_yes": "Potable water",
+          "amenity_fountain": "Fountain",
+          "amenity_bakery": "Bakery",
+          "amenity_bar": "Bar",
+          "amenity_cafe": "Café",
+          "amenity_cemetery": "Cemetery",
+          "amenity_pub": "Pub",
+          "amenity_restaurant": "Restaurant",
+          "amenity_toilets": "Toilets"
+        },
+        "details": {
+          "access": {
+            "yes": "Public access",
+            "no": "No access",
+            "private": "Private access",
+            "permissive": "Permissive access",
+            "customers": "Customers only",
+            "destination": "Destination only",
+            "permit": "Permit required"
+          },
+          "drinking_water_legal": {
+            "yes": "Legally potable",
+            "no": "Not potable",
+            "discouraged": "Potability discouraged"
+          },
+          "seasonal": {
+            "yes": "Seasonal",
+            "no": "Year-round",
+            "summer": "Summer only",
+            "winter": "Winter only",
+            "spring": "Spring only",
+            "autumn": "Autumn only"
+          },
+          "fee": {
+            "yes": "Fee",
+            "no": "Free"
+          },
+          "bottle": {
+            "yes": "Bottle refill",
+            "no": "No bottle refill"
+          },
+          "drinkable": {
+            "yes": "Potable",
+            "no": "Not potable"
+          },
+          "pump": {
+            "yes": "Pump",
+            "manual": "Manual pump",
+            "electric": "Electric pump"
+          },
+          "water_source": {
+            "spring": "Spring water",
+            "groundwater": "Groundwater",
+            "tap": "Tap water",
+            "stream": "Stream",
+            "well": "Well water"
+          },
+          "covered": {
+            "yes": "Covered",
+            "no": "Not covered"
+          },
+          "operator": "Operated by {name}"
+        }
+      },
+      "cityLimit": {
+        "search": "Find city limit signs",
+        "searching": "Searching…",
+        "fetchError": "Could not load city limit signs.",
+        "resultsCount": "{count, plural, one {# entry sign on route} other {# entry signs on route}} (≤ {maxDistance} m)",
+        "noOnTrackResults": "No city entry signs on the route (≤ {maxDistance} m).",
+        "defaultName": "Municipality",
+        "poiName": {
+          "generic": "Municipality sign {name}",
+          "entry": "Entry {name}",
+          "exit": "Exit {name}",
+          "both": "Entry / exit {name}"
+        },
+        "kmOnTrack": "{km} km on route",
+        "alreadyAdded": "Already in my POIs",
+        "mapAddHint": "Click to add to POIs",
+        "types": {
+          "generic": "City limit sign",
+          "entry": "City entry",
+          "exit": "City exit",
+          "both": "City entry / exit"
+        }
+      }
+    },
     "weather": {
       "title": "Weather & wind",
       "planTitle": "Ride planning",
@@ -208,6 +353,12 @@
       "gain": "D+",
       "length": "Length",
       "grade": "Avg. grade"
+    },
+    "weatherSection": "Weather & wind",
+    "weatherNotLoaded": "Weather not loaded — refresh weather on the page before export to include the forecast.",
+    "weather": {
+      "ridePlanTitle": "Ride plan",
+      "summaryTitle": "Summary"
     }
   },
   "a11y": {

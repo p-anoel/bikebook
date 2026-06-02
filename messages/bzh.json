@@ -27,12 +27,27 @@
   },
   "roadbook": {
     "title": "Road book",
+    "exportGpx": "Pellgargañ GPX",
     "stats": {
       "distance": "Hed",
       "elevationGain": "D+",
       "elevationLoss": "D−",
       "minElevation": "Uhelder izel",
       "maxElevation": "Uhelder uhel"
+    },
+    "sections": {
+      "route": "Hent",
+      "routeDesc": "Kartenn, kromm ha profil uhelder",
+      "poi": "Poentoù dedenn",
+      "poiDesc": "Poentoù roadbook, dour ha panellou kumun en-dro",
+      "poiManual": "Ma POI",
+      "poiManualDesc": "Ouzhpennañ, kemmañ ha merdeiñ war-zu ho poentoù",
+      "poiWater": "Poentoù dour OSM",
+      "poiWaterDesc": "Klask OpenStreetMap war-zu an hent",
+      "poiCityLimit": "Panellou kumun",
+      "poiCityLimitDesc": "Panellou city_limit OpenStreetMap war-zu an hent",
+      "weather": "Amzer ha raktres",
+      "weatherDesc": "Raktresoù, avel ha rannadoù dre eur"
     },
     "mapTitle": "Kartenn an hent",
     "mapLegend": {
@@ -44,7 +59,7 @@
     },
     "elevationTitle": "Profil uhelder",
     "poiTitle": "Poentoù oberiant",
-    "poiEmpty": "N'eus bet kavet waypoint ebet er GPX",
+    "poiEmpty": "Waypoint ebet er GPX. Ouzhpennit POI amañ dindan pe war ar gartenn.",
     "poiHint": "Merdeit pe klikit war ur linenn evit kavout ar POI war ar gartenn hag ar profil.",
     "poiDistance": "Km {distance}",
     "poiInterval": "+{distance} km",
@@ -92,6 +107,136 @@
     },
     "noData": "Hent ebet karget. Enporzhiit ur restr GPX evit kregiñ.",
     "goUpload": "Enporzhiañ ur GPX",
+    "poiManage": {
+      "addOnMap": "Lakaat war ar gartenn",
+      "cancelMapMode": "Nullañ al lakaat",
+      "mapModeHint": "Klikit war an hent evit lakaat ar POI.",
+      "mapModeBanner": "Mod lakaat POI",
+      "nameLabel": "Anv",
+      "namePlaceholder": "Da sk. Ravito, trec'h…",
+      "descriptionLabel": "Deskrivadur (diret)",
+      "descriptionPlaceholder": "Notenn frank",
+      "distanceLabel": "Km adalek an loc'hañ (muiañ {max})",
+      "addAtKm": "Ouzhpennañ d'ar c'hilometr",
+      "saveEdit": "Enrollañ",
+      "delete": "Dilemel",
+      "editPoi": "Kemmañ",
+      "deletePoi": "Dilemel",
+      "clearSelection": "Diziuzañ",
+      "inMyPois": "En ma POI dija",
+      "addToMyPois": "Ouzhpennañ d'ar POI",
+      "removeFromMyPois": "Diverkañ diouzh ar POI",
+      "defaultName": "POI {index}",
+      "water": {
+        "search": "Klask poentoù dour",
+        "searching": "O klask…",
+        "fetchError": "N'haller ket kargañ ar poentoù dour.",
+        "resultsCount": "{count, plural, one {# poent dour tost} two {# poent dour tost} few {# poent dour tost} many {# poent dour tost} other {# poent dour tost}}",
+        "defaultName": "Poent dour",
+        "kmOnTrack": "{km} km war an hent",
+        "physicalSignOffset": "Poent fizikel {distance} m pell",
+        "alreadyAdded": "En ma POI dija",
+        "mapAddHint": "Klikit evit ouzhpennañ d'ar POI",
+        "types": {
+          "generic": "Poent dour",
+          "spring": "Mammenn naturel",
+          "water_well": "Poull dour",
+          "water_tap": "Robinet dour",
+          "drinking_water": "Poent dour evit evañ",
+          "drinking_water_fountain": "Feunteun evit evañ",
+          "drinking_water_water_tap": "Robinet evit evañ",
+          "drinking_water_spring_box": "Kazenn mammenn",
+          "drinking_water_hand_pump": "Pompenn dorn",
+          "drinking_water_bottle_refill": "Leuniañ ar c'hourzhioù",
+          "drinking_water_jug": "Kannec'h dour",
+          "drinking_water_yes": "Dour evet",
+          "amenity_fountain": "Feunteun",
+          "amenity_bakery": "Baraerezh",
+          "amenity_bar": "Tavarn",
+          "amenity_cafe": "Kafedi",
+          "amenity_cemetery": "Bered",
+          "amenity_pub": "Tavarn",
+          "amenity_restaurant": "Predti",
+          "amenity_toilets": "Privezioù"
+        },
+        "details": {
+          "access": {
+            "yes": "Moned digor",
+            "no": "Moned difennet",
+            "private": "Moned prevez",
+            "permissive": "Moned aotreet",
+            "customers": "Kliented hepken",
+            "destination": "Pal hepken",
+            "permit": "Aotreerezh ret"
+          },
+          "drinking_water_legal": {
+            "yes": "Dour evet aotreet",
+            "no": "Dour n'eo ket evet",
+            "discouraged": "Evit n'eo ket erbedet"
+          },
+          "seasonal": {
+            "yes": "Seasonel",
+            "no": "Pep seizhun",
+            "summer": "Hañv hepken",
+            "winter": "Goañv hepken",
+            "spring": "Nevez-amzer hepken",
+            "autumn": "Diskar-amzer hepken"
+          },
+          "fee": {
+            "yes": "Paeet",
+            "no": "Foran"
+          },
+          "bottle": {
+            "yes": "Leuniañ ar c'hourzhioù",
+            "no": "N'haller ket leuniañ ar c'hourzhioù"
+          },
+          "drinkable": {
+            "yes": "Dour evet",
+            "no": "Dour n'eo ket evet"
+          },
+          "pump": {
+            "yes": "Pompenn",
+            "manual": "Pompenn dre zorn",
+            "electric": "Pompenn tredan"
+          },
+          "water_source": {
+            "spring": "Mammenn",
+            "groundwater": "Dour dindan an douar",
+            "tap": "Dour ar rouedad",
+            "stream": "Stêr",
+            "well": "Dour ar poull"
+          },
+          "covered": {
+            "yes": "Goloet",
+            "no": "Digolo"
+          },
+          "operator": "Meraet gant {name}"
+        }
+      },
+      "cityLimit": {
+        "search": "Klask panellou kumun",
+        "searching": "O klask…",
+        "fetchError": "N'haller ket kargañ ar panellou kumun.",
+        "resultsCount": "{count, plural, one {# panell mont e-barzh war an hent} two {# panell mont e-barzh war an hent} few {# panell mont e-barzh war an hent} many {# panell mont e-barzh war an hent} other {# panell mont e-barzh war an hent}} (≤ {maxDistance} m)",
+        "noOnTrackResults": "Panell mont e-barzh kumun ebet war an hent (≤ {maxDistance} m).",
+        "defaultName": "Kumun",
+        "poiName": {
+          "generic": "Panell kumun {name}",
+          "entry": "Mont e-barzh {name}",
+          "exit": "Mont e-maez {name}",
+          "both": "Mont e-barzh / e-maez {name}"
+        },
+        "kmOnTrack": "{km} km war an hent",
+        "alreadyAdded": "En ma POI dija",
+        "mapAddHint": "Klikit evit ouzhpennañ d'ar POI",
+        "types": {
+          "generic": "Panell kumun",
+          "entry": "Mont e-barzh ar gumun",
+          "exit": "Mont e-maez ar gumun",
+          "both": "Mont e-barzh / e-maez ar gumun"
+        }
+      }
+    },
     "weather": {
       "title": "Amzer ha avel",
       "planTitle": "Kempenn an hent",
@@ -208,6 +353,12 @@
       "gain": "D+",
       "length": "Hirder",
       "grade": "Kromm vevk"
+    },
+    "weatherSection": "Meteo ha gwin",
+    "weatherNotLoaded": "Meteo n'eo ket karget — freskait ar meteo war ar bajenn a-raok an ezporzh evit lakaat ar reolamantoù.",
+    "weather": {
+      "ridePlanTitle": "Plan",
+      "summaryTitle": "Sintezenn"
     }
   },
   "a11y": {

@@ -1,10 +1,15 @@
 import type { Poi, TrackPoint } from "@/types/roadbook";
 import { getElevationAtDistance } from "@/lib/gpx/elevation";
+import {
+  buildColoredTrackSegments,
+  trackPolylinePositions,
+} from "@/lib/gpx/map-track";
 import { sortPoisByDistance } from "@/lib/gpx/poi";
 import {
   latLngToProjectedPixel,
   pointsToPathD,
   type MapProjectionMeta,
+  type PdfPoint,
 } from "@/lib/pdf/geo-bounds";
 
 function sampleTrack(track: TrackPoint[], maxPoints = 250): TrackPoint[] {
@@ -56,8 +61,16 @@ export interface MapEndpointMarker {
   y: number;
 }
 
+export interface MapColoredSegment {
+  color: string;
+  d: string;
+}
+
 export interface MapOverlayData {
-  trackPath: string;
+  /** White underlay — same sampling as the interactive map outline. */
+  trackOutlinePath: string;
+  /** Grade-colored segments aligned with GradientTrackLine / map-track. */
+  trackSegments: MapColoredSegment[];
   trackPoints: Array<{ x: number; y: number }>;
   pois: MapPoiMarker[];
   markers: MapEndpointMarker[];
@@ -65,16 +78,35 @@ export interface MapOverlayData {
   height: number;
 }
 
+function latLngPositionsToPath(
+  positions: [number, number][],
+  projection: MapProjectionMeta,
+): string {
+  const points = densifyPoints(
+    positions.map(([lat, lng]) => latLngToProjectedPixel(lat, lng, projection)),
+  );
+  return pointsToPathD(points);
+}
+
+function trackToDensePoints(track: TrackPoint[], projection: MapProjectionMeta): PdfPoint[] {
+  return densifyPoints(
+    sampleTrack(track).map((point) => latLngToProjectedPixel(point.lat, point.lng, projection)),
+  );
+}
+
 export function buildMapOverlay(
   track: TrackPoint[],
   pois: Poi[],
   projection: MapProjectionMeta,
 ): MapOverlayData {
-  const sampledTrack = sampleTrack(track);
-  const trackPoints = densifyPoints(
-    sampledTrack.map((point) => latLngToProjectedPixel(point.lat, point.lng, projection)),
-  );
-  const trackPath = pointsToPathD(trackPoints);
+  const trackPoints = trackToDensePoints(track, projection);
+  const trackOutlinePath = latLngPositionsToPath(trackPolylinePositions(track), projection);
+  const trackSegments = buildColoredTrackSegments(track)
+    .map((segment) => ({
+      color: segment.color,
+      d: latLngPositionsToPath(segment.positions, projection),
+    }))
+    .filter((segment) => segment.d.length > 0);
 
   const poiMarkers = sortPoisByDistance(pois).map((poi, index) => ({
     id: poi.id,
@@ -109,7 +141,8 @@ export function buildMapOverlay(
   }
 
   return {
-    trackPath,
+    trackOutlinePath,
+    trackSegments,
     trackPoints,
     pois: poiMarkers,
     markers,

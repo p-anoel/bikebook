@@ -18,6 +18,8 @@ interface ElevationProfileChartProps {
   maxProfilePoints?: number;
   profileStrokeWidth?: number;
   variant?: "standard" | "strip";
+  distanceDomain?: [number, number];
+  segmentClimbs?: ClimbSegment[];
 }
 
 export function ElevationProfileChart({
@@ -32,6 +34,8 @@ export function ElevationProfileChart({
   maxProfilePoints,
   profileStrokeWidth = 1.2,
   variant = "standard",
+  distanceDomain,
+  segmentClimbs,
 }: ElevationProfileChartProps) {
   const model = buildPdfElevationChartModel(
     track,
@@ -42,13 +46,14 @@ export function ElevationProfileChart({
     undefined,
     undefined,
     undefined,
-    { maxProfilePoints, variant },
+    { maxProfilePoints, variant, distanceDomain, segmentClimbs },
   );
   const { layout } = model;
   const isStrip = variant === "strip";
   const axisFontSize = isStrip ? 6 : 8;
   const fillOpacity = isStrip ? 1 : 0.85;
-  const climbHighlights = !isStrip ? buildPdfClimbHighlights(climbs, layout) : [];
+  const climbHighlights =
+    climbs.length > 0 ? buildPdfClimbHighlights(climbs, layout) : [];
 
   return (
     <Svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
@@ -154,7 +159,7 @@ export function ElevationProfileChart({
         </>
       ) : null}
 
-      {!isStrip && labels.length > 0 ? <SvgTooltipLabels labels={labels} /> : null}
+      {labels.length > 0 ? <SvgTooltipLabels labels={labels} /> : null}
     </Svg>
   );
 }

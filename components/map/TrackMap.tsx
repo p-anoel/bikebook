@@ -5,12 +5,19 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useTranslations } from "next-intl";
 import type { Poi, RoadbookBounds, TrackPoint } from "@/types/roadbook";
 import { withPoiStats } from "@/lib/gpx/poi-intervals";
+import { snapLatLngToTrack } from "@/lib/gpx/poi-manage";
 import { formatElevation } from "@/lib/utils";
 import { EndpointMarker } from "@/components/map/EndpointMarker";
 import { GradientTrackLine } from "@/components/map/GradientTrackLine";
 import { TrackGradeLegend } from "@/components/map/TrackGradeLegend";
 import { PoiMarker } from "@/components/map/PoiMarker";
-import { WindMarker } from "@/components/map/WindMarker";
+import { WaterPointMarker } from "@/components/map/WaterPointMarker";
+import { CityLimitMarker } from "@/components/map/CityLimitMarker";
+import { MapPoiPlacement } from "@/components/map/MapPoiPlacement";
+import { translateWaterPointDisplay } from "@/lib/osm/water-display";
+import { formatCityLimitDisplayTitle, translateCityLimitDisplay } from "@/lib/osm/city-limit-display";
+import type { OsmWaterPoint } from "@/lib/osm/water-points";
+import { parseCityLimitSignName, type OsmCityLimitSign } from "@/lib/osm/city-limit-signs";
 import type { RouteWeatherSegment } from "@/lib/weather/types";
 import "leaflet/dist/leaflet.css";
 
@@ -78,6 +85,18 @@ interface TrackMapProps {
   hoveredWeatherSegmentId?: number | null;
   onWeatherSegmentSelect?: (segmentId: number | null) => void;
   onWeatherSegmentHover?: (segmentId: number | null) => void;
+  addPoiMode?: boolean;
+  onMapPoiPlace?: (lat: number, lng: number) => void;
+  waterPoints?: OsmWaterPoint[];
+  addedOsmWaterIds?: Set<string>;
+  hoveredWaterPointId?: string | null;
+  onWaterPointSelect?: (point: OsmWaterPoint) => void;
+  onWaterPointHover?: (osmId: string | null) => void;
+  cityLimitSigns?: OsmCityLimitSign[];
+  addedOsmCityLimitIds?: Set<string>;
+  hoveredCityLimitId?: string | null;
+  onCityLimitSelect?: (sign: OsmCityLimitSign) => void;
+  onCityLimitHover?: (osmId: string | null) => void;
 }
 
 export function TrackMap({
@@ -91,13 +110,23 @@ export function TrackMap({
   onPoiHover,
   weatherSegments = [],
   selectedWeatherSegmentId = null,
-  hoveredWeatherSegmentId = null,
-  onWeatherSegmentSelect,
-  onWeatherSegmentHover,
+  addPoiMode = false,
+  onMapPoiPlace,
+  waterPoints = [],
+  addedOsmWaterIds,
+  hoveredWaterPointId = null,
+  onWaterPointSelect,
+  onWaterPointHover,
+  cityLimitSigns = [],
+  addedOsmCityLimitIds,
+  hoveredCityLimitId = null,
+  onCityLimitSelect,
+  onCityLimitHover,
 }: TrackMapProps) {
   const t = useTranslations("a11y");
   const tRoadbook = useTranslations("roadbook");
-  const tWeather = useTranslations("roadbook.weather");
+  const tWater = useTranslations("roadbook.poiManage.water");
+  const tCityLimit = useTranslations("roadbook.poiManage.cityLimit");
 
   const center = useMemo(() => {
     const [[swLat, swLng], [neLat, neLng]] = bounds;
@@ -111,20 +140,6 @@ export function TrackMap({
     `${new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(distanceM / 1000)} km`;
 
   const poiStats = useMemo(() => withPoiStats(track, pois), [track, pois]);
-
-  const windMarkerLabels = useMemo(
-    () => ({
-      segment: tWeather("segmentLabel", { id: "{id}" }),
-      windSpeed: tWeather("windSpeed", { speed: "{speed}" }),
-      windComponent: tWeather("windComponent", { value: "{value}" }),
-      temperature: tWeather("temperature", { value: "{value}" }),
-      precipitation: tWeather("precipitation", { value: "{value}" }),
-      headwind: tWeather("windRelative.headwind"),
-      tailwind: tWeather("windRelative.tailwind"),
-      crosswind: tWeather("windRelative.crosswind"),
-    }),
-    [tWeather],
-  );
 
   return (
     <div
@@ -162,6 +177,68 @@ export function TrackMap({
             distanceKm={formatDistance(finish.distanceM)}
           />
         ) : null}
+        {waterPoints.map((point) => {
+          const labels = translateWaterPointDisplay(point.tags, tWater);
+          const snapped = snapLatLngToTrack(track, point.lat, point.lng);
+          const trackKmLabel = snapped
+            ? tWater("kmOnTrack", { km: (snapped.distanceM / 1000).toFixed(1) })
+            : "";
+          const physicalSignLabel =
+            point.distanceToTrackM >= 1
+              ? tWater("physicalSignOffset", {
+                  distance: Math.round(point.distanceToTrackM),
+                })
+              : undefined;
+
+          return (
+            <WaterPointMarker
+              key={point.id}
+              point={point}
+              track={track}
+              added={addedOsmWaterIds?.has(point.id) ?? false}
+              hovered={point.id === hoveredWaterPointId}
+              typeLabel={labels.typeLabel}
+              detailsLine={labels.detailsLine}
+              nameLabel={tWater("defaultName")}
+              trackKmLabel={trackKmLabel}
+              physicalSignLabel={physicalSignLabel}
+              addLabel={tWater("mapAddHint")}
+              addedLabel={tWater("alreadyAdded")}
+              onSelect={onWaterPointSelect}
+              onHover={onWaterPointHover}
+            />
+          );
+        })}
+        {cityLimitSigns.map((sign) => {
+          const labels = translateCityLimitDisplay(sign.tags, tCityLimit);
+          const communeName = sign.name ?? parseCityLimitSignName(sign.tags);
+          const titleLabel = formatCityLimitDisplayTitle(
+            communeName,
+            labels,
+            tCityLimit,
+            tCityLimit("defaultName"),
+          );
+          const snapped = snapLatLngToTrack(track, sign.lat, sign.lng);
+          const trackKmLabel = snapped
+            ? tCityLimit("kmOnTrack", { km: (snapped.distanceM / 1000).toFixed(1) })
+            : "";
+
+          return (
+            <CityLimitMarker
+              key={sign.id}
+              sign={sign}
+              added={addedOsmCityLimitIds?.has(sign.id) ?? false}
+              hovered={sign.id === hoveredCityLimitId}
+              titleLabel={titleLabel}
+              typeLabel={labels.typeLabel}
+              trackKmLabel={trackKmLabel}
+              addLabel={tCityLimit("mapAddHint")}
+              addedLabel={tCityLimit("alreadyAdded")}
+              onSelect={onCityLimitSelect}
+              onHover={onCityLimitHover}
+            />
+          );
+        })}
         {poiStats.map((poi) => (
           <PoiMarker
             key={poi.id}
@@ -188,25 +265,23 @@ export function TrackMap({
             onHover={onPoiHover}
           />
         ))}
-        {weatherSegments.map((segment) => (
-          <WindMarker
-            key={`wind-${segment.id}`}
-            segment={segment}
-            locale={locale}
-            selected={segment.id === selectedWeatherSegmentId}
-            hovered={segment.id === hoveredWeatherSegmentId}
-            labels={windMarkerLabels}
-            onSelect={onWeatherSegmentSelect}
-            onHover={onWeatherSegmentHover}
-          />
-        ))}
         <FocusSelectedPoi pois={poiStats} selectedPoiId={selectedPoiId} />
         <FocusSelectedWeatherSegment
           segments={weatherSegments}
           selectedSegmentId={selectedWeatherSegmentId}
         />
         <FitBounds bounds={bounds} />
+        {addPoiMode && onMapPoiPlace ? (
+          <MapPoiPlacement enabled={addPoiMode} onMapClick={onMapPoiPlace} />
+        ) : null}
       </MapContainer>
+      {addPoiMode ? (
+        <div className="pointer-events-none absolute inset-x-0 top-2 z-[500] flex justify-center px-2">
+          <span className="rounded-full bg-amber-500 px-3 py-1 text-xs font-medium text-white shadow">
+            {tRoadbook("poiManage.mapModeBanner")}
+          </span>
+        </div>
+      ) : null}
       <TrackGradeLegend />
     </div>
   );

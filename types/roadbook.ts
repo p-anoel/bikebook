@@ -5,6 +5,8 @@ export interface TrackPoint {
   distanceM: number;
 }
 
+export type PoiSource = "gpx" | "manual" | "osm" | "osm-city-limit";
+
 export interface Poi {
   id: string;
   name: string;
@@ -13,6 +15,8 @@ export interface Poi {
   lng: number;
   ele?: number;
   distanceFromStartM: number;
+  source?: PoiSource;
+  osmId?: string;
 }
 
 export interface RoadbookStats {

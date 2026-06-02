@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { withPoiStats, type PoiWithStats } from "@/lib/gpx/poi-intervals";
 import type { Poi, TrackPoint } from "@/types/roadbook";
 import { formatElevation } from "@/lib/utils";
@@ -14,6 +16,8 @@ interface PoiListProps {
   hoveredPoiId?: string | null;
   onSelect?: (poiId: string | null) => void;
   onHover?: (poiId: string | null) => void;
+  onEdit?: (poiId: string) => void;
+  onDelete?: (poiId: string) => void;
 }
 
 function poiRowClass(selected: boolean, hovered: boolean, interactive: boolean) {
@@ -21,6 +25,59 @@ function poiRowClass(selected: boolean, hovered: boolean, interactive: boolean) 
   if (selected) return "bg-blue-50 ring-2 ring-amber-400";
   if (hovered) return "bg-blue-50/80 ring-2 ring-blue-300";
   return "hover:bg-zinc-50 active:bg-zinc-100";
+}
+
+function PoiRowActions({
+  poiId,
+  onEdit,
+  onDelete,
+  editLabel,
+  deleteLabel,
+}: {
+  poiId: string;
+  onEdit?: (poiId: string) => void;
+  onDelete?: (poiId: string) => void;
+  editLabel: string;
+  deleteLabel: string;
+}) {
+  if (!onEdit && !onDelete) return null;
+
+  return (
+    <div className="flex shrink-0 flex-col items-stretch gap-0.5">
+      {onEdit ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="px-2 text-xs text-zinc-600"
+          aria-label={editLabel}
+          onClick={(event) => {
+            event.stopPropagation();
+            onEdit(poiId);
+          }}
+        >
+          <Pencil className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {editLabel}
+        </Button>
+      ) : null}
+      {onDelete ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="ghost"
+          className="px-2 text-xs text-zinc-600"
+          aria-label={deleteLabel}
+          onClick={(event) => {
+            event.stopPropagation();
+            onDelete(poiId);
+          }}
+        >
+          <Trash2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {deleteLabel}
+        </Button>
+      ) : null}
+    </div>
+  );
 }
 
 function PoiMetrics({
@@ -80,11 +137,15 @@ export function PoiList({
   hoveredPoiId = null,
   onSelect,
   onHover,
+  onEdit,
+  onDelete,
 }: PoiListProps) {
   const t = useTranslations("roadbook");
+  const tManage = useTranslations("roadbook.poiManage");
   const rowRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   const rows = useMemo(() => withPoiStats(track, pois), [track, pois]);
+  const showActions = Boolean(onEdit || onDelete);
 
   useEffect(() => {
     if (!selectedPoiId) return;
@@ -98,6 +159,11 @@ export function PoiList({
   const hint = onSelect ? (
     <p className="mb-2 text-[11px] text-zinc-500">{t("poiHint")}</p>
   ) : null;
+
+  const actionLabels = {
+    edit: tManage("editPoi"),
+    delete: tManage("deletePoi"),
+  };
 
   return (
     <div>
@@ -143,17 +209,29 @@ export function PoiList({
                 if (node) rowRefs.current.set(poi.id, node);
                 else rowRefs.current.delete(poi.id);
               }}
+              className={`flex items-stretch gap-1 rounded-lg border border-zinc-200 bg-white transition-colors ${poiRowClass(selected, hovered, true)}`}
+              onMouseEnter={() => onHover?.(poi.id)}
+              onMouseLeave={() => onHover?.(null)}
             >
               <button
                 type="button"
                 onClick={() => onSelect?.(poi.id)}
-                onMouseEnter={() => onHover?.(poi.id)}
-                onMouseLeave={() => onHover?.(null)}
                 aria-pressed={selected}
-                className={`w-full rounded-lg border border-zinc-200 p-3 text-left transition-colors ${poiRowClass(selected, hovered, true)}`}
+                className="min-w-0 flex-1 rounded-lg p-3 text-left"
               >
                 {body}
               </button>
+              {showActions ? (
+                <div className="flex items-center pr-1">
+                  <PoiRowActions
+                    poiId={poi.id}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    editLabel={actionLabels.edit}
+                    deleteLabel={actionLabels.delete}
+                  />
+                </div>
+              ) : null}
             </li>
           );
         })}
@@ -241,45 +319,58 @@ export function PoiList({
                   className="border-b border-zinc-100 last:border-0"
                 >
                   <td className="p-1" colSpan={8}>
-                    <button
-                      type="button"
-                      onClick={() => onSelect(poi.id)}
+                    <div
+                      className={`flex items-center gap-1 rounded-md transition-colors ${poiRowClass(selected, hovered, true)}`}
                       onMouseEnter={() => onHover?.(poi.id)}
                       onMouseLeave={() => onHover?.(null)}
-                      aria-pressed={selected}
-                      className={`grid w-full grid-cols-[2.5rem_1.2fr_0.8fr_1fr_1fr_1fr_0.8fr_1.5fr] gap-2 rounded-md px-3 py-2.5 text-left transition-colors ${poiRowClass(selected, hovered, true)}`}
                     >
-                      <span className="font-semibold text-blue-700">{poi.number}</span>
-                      <span className="font-medium text-zinc-900">{poi.name}</span>
-                      <span className="text-zinc-600">
-                        {t("poiDistance", {
-                          distance: (poi.distanceFromStartM / 1000).toFixed(1),
-                        })}
-                      </span>
-                      <span className="text-zinc-600">
-                        {poi.intervalFromPrevM === null
-                          ? "—"
-                          : t("poiInterval", {
-                              distance: (poi.intervalFromPrevM / 1000).toFixed(1),
-                            })}
-                      </span>
-                      <span className="text-zinc-600">
-                        {poi.intervalElevationGainM === null
-                          ? "—"
-                          : t("poiIntervalGain", {
-                              gain: formatElevation(poi.intervalElevationGainM, locale),
-                            })}
-                      </span>
-                      <span className="text-zinc-600">
-                        {t("poiCumulativeGain", {
-                          gain: formatElevation(poi.cumulativeElevationGainM, locale),
-                        })}
-                      </span>
-                      <span className="text-zinc-600">
-                        {poi.ele !== undefined ? `${formatElevation(poi.ele, locale)} m` : "—"}
-                      </span>
-                      <span className="text-zinc-500">{poi.description ?? "—"}</span>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => onSelect(poi.id)}
+                        aria-pressed={selected}
+                        className={`grid min-w-0 flex-1 grid-cols-[2.5rem_1.2fr_0.8fr_1fr_1fr_1fr_0.8fr_1.5fr] gap-2 px-3 py-2.5 text-left`}
+                      >
+                        <span className="font-semibold text-blue-700">{poi.number}</span>
+                        <span className="font-medium text-zinc-900">{poi.name}</span>
+                        <span className="text-zinc-600">
+                          {t("poiDistance", {
+                            distance: (poi.distanceFromStartM / 1000).toFixed(1),
+                          })}
+                        </span>
+                        <span className="text-zinc-600">
+                          {poi.intervalFromPrevM === null
+                            ? "—"
+                            : t("poiInterval", {
+                                distance: (poi.intervalFromPrevM / 1000).toFixed(1),
+                              })}
+                        </span>
+                        <span className="text-zinc-600">
+                          {poi.intervalElevationGainM === null
+                            ? "—"
+                            : t("poiIntervalGain", {
+                                gain: formatElevation(poi.intervalElevationGainM, locale),
+                              })}
+                        </span>
+                        <span className="text-zinc-600">
+                          {t("poiCumulativeGain", {
+                            gain: formatElevation(poi.cumulativeElevationGainM, locale),
+                          })}
+                        </span>
+                        <span className="text-zinc-600">
+                          {poi.ele !== undefined ? `${formatElevation(poi.ele, locale)} m` : "—"}
+                        </span>
+                        <span className="text-zinc-500">{poi.description ?? "—"}</span>
+                      </button>
+                      {showActions ? (
+                        <PoiRowActions
+                          poiId={poi.id}
+                          onEdit={onEdit}
+                          onDelete={onDelete}
+                          editLabel={actionLabels.edit}
+                          deleteLabel={actionLabels.delete}
+                        />
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               );

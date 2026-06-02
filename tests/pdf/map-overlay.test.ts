@@ -45,4 +45,27 @@ describe("buildMapOverlay", () => {
     expect(overlay.markers[0].kind).toBe("start");
     expect(overlay.markers[1].kind).toBe("finish");
   });
+
+  it("builds grade-colored track segments and a white outline path", () => {
+    const overlay = buildMapOverlay(track, pois, projection);
+
+    expect(overlay.trackOutlinePath).toMatch(/^M /);
+    expect(overlay.trackSegments.length).toBeGreaterThan(0);
+    expect(overlay.trackSegments.every((segment) => /^#[0-9a-f]{6}$/i.test(segment.color))).toBe(
+      true,
+    );
+    expect(overlay.trackSegments.every((segment) => segment.d.startsWith("M "))).toBe(true);
+  });
+
+  it("uses map grade colors for uphill segments", () => {
+    const steepTrack: TrackPoint[] = [
+      { lat: 45, lng: 6, ele: 100, distanceM: 0 },
+      { lat: 45.001, lng: 6.001, ele: 120, distanceM: 200 },
+      { lat: 45.002, lng: 6.002, ele: 150, distanceM: 400 },
+    ];
+    const overlay = buildMapOverlay(steepTrack, [], projection);
+    const colors = new Set(overlay.trackSegments.map((segment) => segment.color));
+
+    expect(colors.has("#f97316") || colors.has("#ea580c") || colors.has("#ef4444")).toBe(true);
+  });
 });
