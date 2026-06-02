@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       raw.startsWith("Impossible de joindre Overpass") ||
       raw.startsWith("Les serveurs OpenStreetMap")
         ? raw
-        : `Points d'eau OSM indisponibles : ${raw}`;
+        : `Points d'eau à proximité du parcours indisponibles : ${raw}`;
     return NextResponse.json(
       { error: { code: "WATER_POINTS_FETCH_FAILED", message } },
       { status: 502 },

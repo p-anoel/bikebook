@@ -397,7 +397,6 @@ export default function RoadbookPage() {
             <RoadbookSection
               nested
               title={t("sections.poiWater")}
-              description={t("sections.poiWaterDesc")}
               defaultOpen
               storageKey="bikebook-roadbook-section-poi-water"
             >
@@ -407,7 +406,6 @@ export default function RoadbookPage() {
             <RoadbookSection
               nested
               title={t("sections.poiCityLimit")}
-              description={t("sections.poiCityLimitDesc")}
               defaultOpen
               storageKey="bikebook-roadbook-section-poi-city-limit"
             >

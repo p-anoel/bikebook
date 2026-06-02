@@ -1,7 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Droplets, Check, MapPin, Pencil, Plus, Signpost, Trash2, X } from "lucide-react";
+import {
+  Check,
+  Droplets,
+  Loader2,
+  MapPin,
+  Pencil,
+  Plus,
+  Signpost,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
@@ -493,10 +503,15 @@ export function PoiManager({
             type="button"
             size="sm"
             variant="secondary"
-            onClick={handleSearchWater}
+            onClick={() => void handleSearchWater()}
             disabled={waterLoading || track.length === 0}
+            aria-busy={waterLoading}
           >
-            <Droplets className="h-4 w-4" aria-hidden="true" />
+            {waterLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Droplets className="h-4 w-4" aria-hidden="true" />
+            )}
             {waterLoading ? tWater("searching") : tWater("search")}
           </Button>
 
@@ -580,10 +595,15 @@ export function PoiManager({
             type="button"
             size="sm"
             variant="secondary"
-            onClick={handleSearchCityLimits}
+            onClick={() => void handleSearchCityLimits()}
             disabled={cityLimitLoading || track.length === 0}
+            aria-busy={cityLimitLoading}
           >
-            <Signpost className="h-4 w-4" aria-hidden="true" />
+            {cityLimitLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            ) : (
+              <Signpost className="h-4 w-4" aria-hidden="true" />
+            )}
             {cityLimitLoading ? tCityLimit("searching") : tCityLimit("search")}
           </Button>
 

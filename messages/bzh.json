@@ -42,10 +42,8 @@
       "poiDesc": "Poentoù roadbook, dour ha panellou kumun en-dro",
       "poiManual": "Ma POI",
       "poiManualDesc": "Ouzhpennañ, kemmañ ha merdeiñ war-zu ho poentoù",
-      "poiWater": "Poentoù dour OSM",
-      "poiWaterDesc": "Klask OpenStreetMap war-zu an hent",
-      "poiCityLimit": "Panellou kumun",
-      "poiCityLimitDesc": "Panellou city_limit OpenStreetMap war-zu an hent",
+      "poiWater": "Poentoù dour tost d'an hent",
+      "poiCityLimit": "Panell kumun war an hent",
       "weather": "Amzer ha raktres",
       "weatherDesc": "Raktresoù, avel ha rannadoù dre eur"
     },

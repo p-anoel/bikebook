@@ -42,10 +42,8 @@
       "poiDesc": "Waypoints du roadbook, points d'eau et panneaux de commune à proximité",
       "poiManual": "Mes POI",
       "poiManualDesc": "Ajouter, modifier et parcourir vos points",
-      "poiWater": "Points d'eau OSM",
-      "poiWaterDesc": "Recherche OpenStreetMap le long du parcours",
-      "poiCityLimit": "Panneaux de commune",
-      "poiCityLimitDesc": "Panneaux city_limit OpenStreetMap le long du parcours",
+      "poiWater": "Points d'eau à proximité du parcours",
+      "poiCityLimit": "Panneau de commune sur le parcours",
       "weather": "Météo et planification",
       "weatherDesc": "Prévisions, vent et segments horaires"
     },

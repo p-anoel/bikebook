@@ -42,10 +42,8 @@
       "poiDesc": "Roadbook waypoints, water points and city limit signs nearby",
       "poiManual": "My POIs",
       "poiManualDesc": "Add, edit, and browse your points",
-      "poiWater": "OSM water points",
-      "poiWaterDesc": "OpenStreetMap search along the route",
-      "poiCityLimit": "City limit signs",
-      "poiCityLimitDesc": "OpenStreetMap city_limit signs along the route",
+      "poiWater": "Water points near the route",
+      "poiCityLimit": "Town entry signs on the route",
       "weather": "Weather and planning",
       "weatherDesc": "Forecasts, wind, and hourly segments"
     },
