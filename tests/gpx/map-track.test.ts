@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { buildColoredTrackSegments, trackPolylinePositions } from "@/lib/gpx/map-track";
+import {
+  buildColoredTrackSegments,
+  densifyTrackForMapDisplay,
+  trackPolylinePositions,
+} from "@/lib/gpx/map-track";
 import { buildTrackWithDistances } from "@/lib/gpx/elevation";
 
 describe("buildColoredTrackSegments", () => {
@@ -20,9 +24,9 @@ describe("buildColoredTrackSegments", () => {
   it("merges consecutive segments with the same color", () => {
     const track = buildTrackWithDistances([
       { lat: 45, lng: 6, ele: 100 },
-      { lat: 45.001, lng: 6, ele: 100 },
-      { lat: 45.002, lng: 6, ele: 100 },
-      { lat: 45.003, lng: 6, ele: 100 },
+      { lat: 45.00002, lng: 6, ele: 100 },
+      { lat: 45.00004, lng: 6, ele: 100 },
+      { lat: 45.00006, lng: 6, ele: 100 },
     ]);
 
     const segments = buildColoredTrackSegments(track);
@@ -51,15 +55,67 @@ describe("buildColoredTrackSegments", () => {
 });
 
 describe("trackPolylinePositions", () => {
-  it("returns lat/lng pairs for the track outline", () => {
+  it("returns lat/lng pairs for dense track outline", () => {
     const track = buildTrackWithDistances([
       { lat: 45, lng: 6, ele: 100 },
-      { lat: 45.001, lng: 6.001, ele: 110 },
+      { lat: 45.00002, lng: 6.00002, ele: 110 },
     ]);
 
     expect(trackPolylinePositions(track)).toEqual([
       [45, 6],
-      [45.001, 6.001],
+      [45.00002, 6.00002],
     ]);
+  });
+
+  it("interpolates sparse route segments for smoother map display", () => {
+    const track = buildTrackWithDistances([
+      { lat: 48.0, lng: -2.0, ele: 40 },
+      { lat: 48.0045, lng: -2.0, ele: 40 },
+    ]);
+
+    const positions = trackPolylinePositions(track);
+
+    expect(positions.length).toBeGreaterThan(10);
+    expect(positions[0]).toEqual([48, -2]);
+    expect(positions.at(-1)).toEqual([48.0045, -2]);
+  });
+});
+
+describe("densifyTrackForMapDisplay", () => {
+  it("leaves already-dense GPS tracks unchanged", () => {
+    const track = buildTrackWithDistances([
+      { lat: 48.0, lng: -2.0, ele: 40 },
+      { lat: 48.00002, lng: -2.0, ele: 40 },
+      { lat: 48.00004, lng: -2.0, ele: 40 },
+    ]);
+
+    expect(densifyTrackForMapDisplay(track)).toHaveLength(3);
+  });
+
+  it("adds points along long sparse segments", () => {
+    const track = buildTrackWithDistances([
+      { lat: 48.0, lng: -2.0, ele: 40 },
+      { lat: 48.0045, lng: -2.0, ele: 40 },
+    ]);
+
+    const dense = densifyTrackForMapDisplay(track);
+
+    expect(dense.length).toBeGreaterThan(50);
+    expect(dense[0].lat).toBe(48);
+    expect(dense.at(-1)?.lat).toBeCloseTo(48.0045, 4);
+  });
+});
+
+describe("prepareTrackForMap sampling", () => {
+  it("keeps full densified track when under the threshold", () => {
+    const track = buildTrackWithDistances([
+      { lat: 48.0, lng: -2.0, ele: 40 },
+      { lat: 48.0045, lng: -2.0, ele: 40 },
+    ]);
+
+    const dense = densifyTrackForMapDisplay(track);
+    const outline = trackPolylinePositions(track);
+
+    expect(outline.length).toBe(dense.length);
   });
 });

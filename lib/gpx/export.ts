@@ -1,4 +1,5 @@
-import type { Poi, TrackPoint } from "@/types/roadbook";
+import type { Multitour, Poi, TrackPoint } from "@/types/roadbook";
+import { buildStageView } from "@/lib/gpx/stage-slice";
 
 export interface GpxExportRoadbook {
   name: string;
@@ -91,4 +92,39 @@ export function buildGpxDocument(roadbook: GpxExportRoadbook): string {
 
   parts.push("</gpx>");
   return `${parts.join("\n")}\n`;
+}
+
+export function buildStageGpxExport(
+  multitour: Multitour,
+  stageIndex: number,
+  stageLabel: string,
+): GpxExportRoadbook {
+  const view = buildStageView(multitour, stageIndex);
+  return {
+    name: `${multitour.name.trim() || "Roadbook"} — ${stageLabel}`,
+    track: view.track,
+    pois: view.pois,
+  };
+}
+
+export function buildStageGpxDocument(
+  multitour: Multitour,
+  stageIndex: number,
+  stageLabel: string,
+): string {
+  return buildGpxDocument(buildStageGpxExport(multitour, stageIndex, stageLabel));
+}
+
+export function stageGpxFilename(
+  tourName: string,
+  stageIndex: number,
+  stageLabel: string,
+): string {
+  const base = sanitizeGpxFilename(tourName).replace(/\.gpx$/, "");
+  const safeLabel = stageLabel
+    .trim()
+    .replace(/[^a-z0-9-_]/gi, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+  return `${base}_stage_${stageIndex + 1}${safeLabel ? `_${safeLabel}` : ""}.gpx`;
 }

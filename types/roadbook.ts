@@ -29,13 +29,36 @@ export interface RoadbookStats {
 
 export type RoadbookBounds = [[number, number], [number, number]];
 
-export interface Roadbook {
+export interface Stage {
+  id: string;
+  name?: string;
+  /** Cumulative end distance on the master track (m). */
+  endDistanceM: number;
+}
+
+/** Multi-stage tour: one master track with stage boundaries. */
+export interface Multitour {
   id: string;
   name: string;
   uploadedAt: string;
   stats: RoadbookStats;
   track: TrackPoint[];
   pois: Poi[];
+  bounds: RoadbookBounds;
+  stages: Stage[];
+}
+
+export type Roadbook = Multitour;
+
+/** Derived view for a single stage (not persisted). */
+export interface StageView {
+  index: number;
+  stage: Stage;
+  startDistanceM: number;
+  endDistanceM: number;
+  track: TrackPoint[];
+  pois: Poi[];
+  stats: RoadbookStats;
   bounds: RoadbookBounds;
 }
 

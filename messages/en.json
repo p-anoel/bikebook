@@ -28,6 +28,29 @@
   "roadbook": {
     "title": "Road book",
     "exportGpx": "Download GPX",
+    "stages": {
+      "title": "Stages",
+      "stageLabel": "Stage {number}",
+      "statsGlobal": "Full route",
+      "statsStage": "Active stage",
+      "exportFullGpx": "Full GPX (entire route)",
+      "exportAllStages": "All stages (separate files)",
+      "split": {
+        "title": "Split into stages",
+        "description": "Divide your route into stages of roughly the chosen distance.",
+        "targetKmLabel": "Target distance per stage (km)",
+        "previewStage": "Stage",
+        "previewDistance": "Distance",
+        "previewGain": "Ascent",
+        "stageNumber": "Stage {number}",
+        "confirm": "Create {count} stages",
+        "cancel": "Cancel",
+        "longRouteHint": "This route is long. Would you like to split it into stages?",
+        "skip": "Later",
+        "openSplit": "Split route",
+        "manageSplit": "Edit stages"
+      }
+    },
     "stats": {
       "distance": "Distance",
       "elevationGain": "Ascent",
@@ -268,6 +291,19 @@
       "segmentKm": "Km {km}",
       "passageAt": "Passage ~ {time}",
       "windSpeed": "{speed} km/h",
+      "windDirectionLabel": "{direction} ({deg}°)",
+      "windDirectionDegrees": "{deg}°",
+      "windFromAria": "Wind from the {direction} ({deg}°)",
+      "compass": {
+        "N": "north",
+        "NE": "northeast",
+        "E": "east",
+        "SE": "southeast",
+        "S": "south",
+        "SW": "southwest",
+        "W": "west",
+        "NW": "northwest"
+      },
       "windComponent": "{value} km/h (component)",
       "temperature": "{value} °C",
       "precipitation": "{value} mm",
@@ -305,6 +341,7 @@
         "passage": "Passage",
         "wind": "Wind",
         "speed": "Speed",
+        "direction": "Direction",
         "component": "Component",
         "temp": "Temp.",
         "precip": "Rain"

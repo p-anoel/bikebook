@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { WindDirectionIndicator } from "@/components/weather/WindDirectionIndicator";
 import { weatherCodeGroup, weatherEmoji } from "@/lib/weather/weather-emoji";
 import type { RouteWeatherSegment } from "@/lib/weather/types";
 
@@ -104,9 +105,15 @@ export function WeatherSegmentList({
                 <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-zinc-600">
                   <span>{t("segmentKm", { km: fmt.format(segment.startDistanceM / 1000) })}</span>
                   <span>{t("passageAt", { time: formatPassageTime(segment.passageAt, locale) })}</span>
-                  <span>{t("windSpeed", { speed: fmt.format(segment.windSpeedKmh) })}</span>
+                  <span className="flex flex-col gap-0.5">
+                    <WindDirectionIndicator
+                      windDirectionDeg={segment.windDirectionDeg}
+                      windRelative={segment.windRelative}
+                      variant="stacked"
+                    />
+                    <span>{t("windSpeed", { speed: fmt.format(segment.windSpeedKmh) })}</span>
+                  </span>
                   <span>{t("temperature", { value: fmt.format(segment.temperatureC) })}</span>
-                  <span>{t("windComponent", { value: fmt.format(segment.windComponentKmh) })}</span>
                 </div>
               </button>
             </li>
@@ -123,7 +130,7 @@ export function WeatherSegmentList({
               <th className="px-2 py-2 font-semibold">{t("columns.passage")}</th>
               <th className="px-2 py-2 font-semibold">{t("columns.wind")}</th>
               <th className="px-2 py-2 font-semibold">{t("columns.speed")}</th>
-              <th className="px-2 py-2 font-semibold">{t("columns.component")}</th>
+              <th className="px-2 py-2 font-semibold">{t("columns.direction")}</th>
               <th className="px-2 py-2 font-semibold">{t("columns.temp")}</th>
               <th className="px-2 py-2 font-semibold">{t("columns.precip")}</th>
               <th className="px-2 py-2 font-semibold">{t("columns.sky")}</th>
@@ -160,7 +167,10 @@ export function WeatherSegmentList({
                     {t("windSpeed", { speed: fmt.format(segment.windSpeedKmh) })}
                   </td>
                   <td className="px-2 py-2">
-                    {t("windComponent", { value: fmt.format(segment.windComponentKmh) })}
+                    <WindDirectionIndicator
+                      windDirectionDeg={segment.windDirectionDeg}
+                      windRelative={segment.windRelative}
+                    />
                   </td>
                   <td className="px-2 py-2">
                     {t("temperature", { value: fmt.format(segment.temperatureC) })}

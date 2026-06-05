@@ -13,7 +13,13 @@ import { RoadbookSection } from "@/components/roadbook/RoadbookSection";
 import { WeatherPanel } from "@/components/weather/WeatherPanel";
 import { GpxExportButton } from "@/components/gpx/GpxExportButton";
 import { PdfExportButton } from "@/components/pdf/PdfExportButton";
-import { useRoadbookStore } from "@/lib/store/roadbook-store";
+import { StageSelector } from "@/components/stage/StageSelector";
+import {
+  StageSplitDialog,
+  StageSplitPrompt,
+} from "@/components/stage/StageSplitDialog";
+import { useActiveStageView, useRoadbookStore } from "@/lib/store/roadbook-store";
+import { isLongRoute } from "@/lib/gpx/stage-split";
 import {
   createPoiFromOsmCityLimit,
   createPoiFromOsmWater,
@@ -38,6 +44,10 @@ export default function RoadbookPage() {
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const roadbook = useRoadbookStore((state) => state.roadbook);
+  const activeStageIndex = useRoadbookStore((state) => state.activeStageIndex);
+  const setActiveStageIndex = useRoadbookStore((state) => state.setActiveStageIndex);
+  const splitByTargetKm = useRoadbookStore((state) => state.splitByTargetKm);
+  const stageView = useActiveStageView();
   const [hydrated, setHydrated] = useState(false);
   const [selectedPoiId, setSelectedPoiId] = useState<string | null>(null);
   const [hoveredPoiId, setHoveredPoiId] = useState<string | null>(null);
@@ -49,6 +59,8 @@ export default function RoadbookPage() {
   const [hoveredWaterPointId, setHoveredWaterPointId] = useState<string | null>(null);
   const [cityLimitSigns, setCityLimitSigns] = useState<OsmCityLimitSign[]>([]);
   const [hoveredCityLimitId, setHoveredCityLimitId] = useState<string | null>(null);
+  const [splitDialogOpen, setSplitDialogOpen] = useState(false);
+  const [splitPromptDismissed, setSplitPromptDismissed] = useState(false);
   const mapPoiPlaceRef = useRef<MapPoiPlaceHandler | null>(null);
   const addPoi = useRoadbookStore((state) => state.addPoi);
   const removePoi = useRoadbookStore((state) => state.removePoi);
@@ -71,6 +83,7 @@ export default function RoadbookPage() {
     setHoveredWaterPointId(null);
     setCityLimitSigns([]);
     setHoveredCityLimitId(null);
+    setSplitPromptDismissed(false);
   }, [roadbook?.id]);
 
   const addedOsmWaterIds = useMemo(() => {
@@ -224,7 +237,7 @@ export default function RoadbookPage() {
     );
   }
 
-  if (!roadbook) {
+  if (!roadbook || !stageView) {
     return (
       <div className="mx-auto max-w-lg px-4 py-20 text-center">
         <p className="text-zinc-600">{t("noData")}</p>
@@ -240,32 +253,50 @@ export default function RoadbookPage() {
     );
   }
 
+  const multiStage = roadbook.stages.length > 1;
+  const displayStats = multiStage ? stageView.stats : roadbook.stats;
+  const displayTrack = stageView.track;
+  const displayPois = stageView.pois;
+  const displayBounds = stageView.bounds;
+
+  const showSplitPrompt =
+    !splitPromptDismissed &&
+    !multiStage &&
+    isLongRoute(roadbook.stats.distanceKm);
+
   const stats = [
     {
-      label: t("stats.distance"),
-      value: `${formatDistance(roadbook.stats.distanceKm, locale)} km`,
+      label: multiStage ? t("stages.statsStage") : t("stats.distance"),
+      value: `${formatDistance(displayStats.distanceKm, locale)} km`,
     },
     {
       label: t("stats.elevationGain"),
-      value: `${formatElevation(roadbook.stats.elevationGainM, locale)} m`,
+      value: `${formatElevation(displayStats.elevationGainM, locale)} m`,
     },
     {
       label: t("stats.elevationLoss"),
-      value: `${formatElevation(roadbook.stats.elevationLossM, locale)} m`,
+      value: `${formatElevation(displayStats.elevationLossM, locale)} m`,
     },
     {
       label: t("stats.minElevation"),
-      value: `${formatElevation(roadbook.stats.minElevationM, locale)} m`,
+      value: `${formatElevation(displayStats.minElevationM, locale)} m`,
     },
     {
       label: t("stats.maxElevation"),
-      value: `${formatElevation(roadbook.stats.maxElevationM, locale)} m`,
+      value: `${formatElevation(displayStats.maxElevationM, locale)} m`,
     },
   ];
 
+  if (multiStage) {
+    stats.unshift({
+      label: t("stages.statsGlobal"),
+      value: `${formatDistance(roadbook.stats.distanceKm, locale)} km`,
+    });
+  }
+
   const poiManagerProps = {
     track: roadbook.track,
-    pois: roadbook.pois,
+    pois: displayPois,
     selectedPoiId,
     addMode: poiAddMode,
     onAddModeChange: setPoiAddMode,
@@ -305,6 +336,38 @@ export default function RoadbookPage() {
         </div>
       </div>
 
+      {showSplitPrompt ? (
+        <StageSplitPrompt
+          roadbook={roadbook}
+          onSplit={() => setSplitDialogOpen(true)}
+          onDismiss={() => setSplitPromptDismissed(true)}
+        />
+      ) : null}
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <StageSelector
+          stageCount={roadbook.stages.length}
+          activeIndex={activeStageIndex}
+          onSelect={setActiveStageIndex}
+        />
+        {!multiStage && roadbook.stats.distanceKm > 50 ? (
+          <button
+            type="button"
+            onClick={() => setSplitDialogOpen(true)}
+            className="text-sm font-medium text-zinc-600 underline-offset-2 hover:text-zinc-900 hover:underline"
+          >
+            {t("stages.split.manageSplit")}
+          </button>
+        ) : null}
+      </div>
+
+      <StageSplitDialog
+        roadbook={roadbook}
+        open={splitDialogOpen}
+        onClose={() => setSplitDialogOpen(false)}
+        onConfirm={splitByTargetKm}
+      />
+
       <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-6 sm:flex sm:flex-wrap">
         {stats.map((stat) => (
           <Badge key={stat.label} className="justify-center px-2 py-1.5 text-xs sm:px-3 sm:text-sm">
@@ -324,9 +387,9 @@ export default function RoadbookPage() {
           <div className="space-y-1">
             <h3 className="text-sm font-medium text-zinc-700">{t("mapTitle")}</h3>
             <TrackMapClient
-              track={roadbook.track}
-              pois={roadbook.pois}
-              bounds={roadbook.bounds}
+              track={displayTrack}
+              pois={displayPois}
+              bounds={displayBounds}
               locale={locale}
               selectedPoiId={selectedPoiId}
               hoveredPoiId={hoveredPoiId}
@@ -355,8 +418,8 @@ export default function RoadbookPage() {
           <div className="space-y-1 border-t border-zinc-100 pt-4">
             <h3 className="text-sm font-medium text-zinc-700">{t("elevationTitle")}</h3>
             <ElevationProfile
-              track={roadbook.track}
-              pois={roadbook.pois}
+              track={displayTrack}
+              pois={displayPois}
               locale={locale}
               selectedPoiId={selectedPoiId}
               hoveredPoiId={hoveredPoiId}
@@ -382,8 +445,8 @@ export default function RoadbookPage() {
             >
               <PoiManager {...poiManagerProps} variant="manual" />
               <PoiList
-                track={roadbook.track}
-                pois={roadbook.pois}
+                track={displayTrack}
+                pois={displayPois}
                 locale={locale}
                 selectedPoiId={selectedPoiId}
                 hoveredPoiId={hoveredPoiId}
@@ -421,7 +484,7 @@ export default function RoadbookPage() {
           storageKey="bikebook-roadbook-section-weather"
         >
           <WeatherPanel
-            track={roadbook.track}
+            track={displayTrack}
             locale={locale}
             onWeatherLoaded={handleWeatherLoaded}
             selectedSegmentId={selectedWeatherSegmentId}

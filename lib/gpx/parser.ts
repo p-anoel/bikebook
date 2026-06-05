@@ -1,9 +1,11 @@
 import { XMLParser } from "fast-xml-parser";
+import { computeBounds } from "@/lib/gpx/bounds";
 import {
   buildTrackWithDistances,
   computeElevationStats,
 } from "@/lib/gpx/elevation";
 import { projectPoisOnTrack, type RawWaypoint } from "@/lib/gpx/poi";
+import { createDefaultStage } from "@/lib/gpx/stage-split";
 import type { GpxParseError, Roadbook, RoadbookBounds } from "@/types/roadbook";
 
 type GpxPoint = {
@@ -113,15 +115,10 @@ function extractTrackName(gpx: Record<string, unknown>): string | undefined {
   return undefined;
 }
 
-function computeBounds(
+function computeBoundsForTrack(
   track: Array<{ lat: number; lng: number }>,
 ): RoadbookBounds {
-  const lats = track.map((p) => p.lat);
-  const lngs = track.map((p) => p.lng);
-  return [
-    [Math.min(...lats), Math.min(...lngs)],
-    [Math.max(...lats), Math.max(...lngs)],
-  ];
+  return computeBounds(track);
 }
 
 export function parseGpxContent(
@@ -179,7 +176,8 @@ export function parseGpxContent(
     },
     track,
     pois,
-    bounds: computeBounds(track),
+    bounds: computeBoundsForTrack(track),
+    stages: createDefaultStage(track),
   };
 }
 

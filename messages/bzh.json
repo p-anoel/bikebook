@@ -28,6 +28,29 @@
   "roadbook": {
     "title": "Road book",
     "exportGpx": "Pellgargañ GPX",
+    "stages": {
+      "title": "Tammoù",
+      "stageLabel": "Tamm {number}",
+      "statsGlobal": "Hent klok",
+      "statsStage": "Tamm oberiant",
+      "exportFullGpx": "GPX klok (an hent a-bezh)",
+      "exportAllStages": "An holl dammoù (restroù disheñvel)",
+      "split": {
+        "title": "Disrannañ e tammoù",
+        "description": "Rannañ ho hent e tammoù e-tro hed ar pellder dibabet.",
+        "targetKmLabel": "Pellder vuket dre damm (km)",
+        "previewStage": "Tamm",
+        "previewDistance": "Hed",
+        "previewGain": "D+",
+        "stageNumber": "Tamm {number}",
+        "confirm": "Krouiñ {count} tamm",
+        "cancel": "Nullañ",
+        "longRouteHint": "Hent hir eo. Fellout a ra deoc'h disrannañ anezhañ e tammoù?",
+        "skip": "Diwezhatoc'h",
+        "openSplit": "Disrannañ",
+        "manageSplit": "Kemmañ ar tammoù"
+      }
+    },
     "stats": {
       "distance": "Hed",
       "elevationGain": "D+",
@@ -268,6 +291,19 @@
       "segmentKm": "Km {km}",
       "passageAt": "Treuz ~ {time}",
       "windSpeed": "{speed} km/h",
+      "windDirectionLabel": "{direction} ({deg}°)",
+      "windDirectionDegrees": "{deg}°",
+      "windFromAria": "Avel eus ar {direction} ({deg}°)",
+      "compass": {
+        "N": "norzh",
+        "NE": "norzh-reter",
+        "E": "reter",
+        "SE": "su-reter",
+        "S": "su",
+        "SW": "su-kornôg",
+        "W": "kornôg",
+        "NW": "norzh-kornôg"
+      },
       "windComponent": "{value} km/h (kenefed)",
       "temperature": "{value} °C",
       "precipitation": "{value} mm",
@@ -305,6 +341,7 @@
         "passage": "Treuz",
         "wind": "Avel",
         "speed": "Tizh",
+        "direction": "Tu",
         "component": "Kenefed",
         "temp": "Temp.",
         "precip": "Glav"

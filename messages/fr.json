@@ -28,6 +28,29 @@
   "roadbook": {
     "title": "Road book",
     "exportGpx": "Télécharger GPX",
+    "stages": {
+      "title": "Étapes",
+      "stageLabel": "Étape {number}",
+      "statsGlobal": "Parcours complet",
+      "statsStage": "Étape active",
+      "exportFullGpx": "GPX complet (tout le parcours)",
+      "exportAllStages": "Toutes les étapes (fichiers séparés)",
+      "split": {
+        "title": "Découper en étapes",
+        "description": "Répartissez votre parcours en étapes d'environ la distance choisie.",
+        "targetKmLabel": "Distance cible par étape (km)",
+        "previewStage": "Étape",
+        "previewDistance": "Distance",
+        "previewGain": "D+",
+        "stageNumber": "Étape {number}",
+        "confirm": "Créer {count} étapes",
+        "cancel": "Annuler",
+        "longRouteHint": "Ce parcours est long. Souhaitez-vous le découper en étapes ?",
+        "skip": "Plus tard",
+        "openSplit": "Découper",
+        "manageSplit": "Modifier les étapes"
+      }
+    },
     "stats": {
       "distance": "Distance",
       "elevationGain": "D+",
@@ -268,6 +291,19 @@
       "segmentKm": "Km {km}",
       "passageAt": "Passage ~ {time}",
       "windSpeed": "{speed} km/h",
+      "windDirectionLabel": "{direction} ({deg}°)",
+      "windDirectionDegrees": "{deg}°",
+      "windFromAria": "Vent du {direction} ({deg}°)",
+      "compass": {
+        "N": "Nord",
+        "NE": "Nord-Est",
+        "E": "Est",
+        "SE": "Sud-Est",
+        "S": "Sud",
+        "SW": "Sud-Ouest",
+        "W": "Ouest",
+        "NW": "Nord-Ouest"
+      },
       "windComponent": "{value} km/h (composante)",
       "temperature": "{value} °C",
       "precipitation": "{value} mm",
@@ -305,6 +341,7 @@
         "passage": "Passage",
         "wind": "Vent",
         "speed": "Vitesse",
+        "direction": "Direction",
         "component": "Composante",
         "temp": "Temp.",
         "precip": "Pluie"
